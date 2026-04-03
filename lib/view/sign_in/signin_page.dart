@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/admin_home.dart';
-import 'package:room_rental/view/sign_in/signin_page.dart';
 import 'package:room_rental/view/user/home/user_home.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
-class Loginscren extends StatelessWidget {
-  Loginscren({super.key});
-
+class SigninPage extends StatelessWidget {
+  SigninPage({super.key});
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
@@ -17,8 +15,7 @@ class Loginscren extends StatelessWidget {
   Widget build(BuildContext context) {
     final roleVM = context.watch<RoleViewModel>();
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      backgroundColor: AppColors.surface,
       body: Stack(
         children: [
           Positioned(
@@ -36,27 +33,22 @@ class Loginscren extends StatelessWidget {
               ),
             ),
           ),
-
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    SizedBox(height: 50),
-                    Image.network(
-                      "https://noblewealthplanning.com/wp-content/uploads/2021/06/1-3.png",
-                      height: 110,
-                    ),
+                    SizedBox(height: 100),
                     Text(
-                      'Welcome Back',
+                      'Create account',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      'Access your personalized health\n dashboard and health records.',
+                      'Sign up and improve your health today.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -76,6 +68,13 @@ class Loginscren extends StatelessWidget {
                       controller: password,
                       Label: "Password",
                       prefixicon: Icons.lock_outline_sharp,
+                    ),
+                    SizedBox(height: 15),
+                    customtextfield(
+                      Label: "Confirm password",
+                      hintText: 'Re Enter password',
+                      prefixicon: Icons.lock_outline_sharp,
+                      controller: password,
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
@@ -100,7 +99,7 @@ class Loginscren extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "Login",
+                        "create account",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -122,34 +121,15 @@ class Loginscren extends StatelessWidget {
                         Expanded(child: Divider(thickness: 1)),
                       ],
                     ),
-                    SizedBox(height: 10),
+                    Text('Sign up with'),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SigninPage(),
-                                ),
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Create account',
-                              style: TextStyle(fontSize: 15),
-                            ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: Image.asset(
+                            'assets/Google _G_ Logo.png',
+                            height: 40,
+                            width: 40,
                           ),
                         ),
                       ],

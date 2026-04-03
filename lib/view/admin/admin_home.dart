@@ -5,6 +5,8 @@ class AdminHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('admin')));
+    return Scaffold(
+      body: Column(children: [Center(child: Text('admin'))]),
+    );
   }
 }

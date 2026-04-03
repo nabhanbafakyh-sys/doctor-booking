@@ -1,40 +1,44 @@
 import 'package:flutter/material.dart';
 
-class customtextfield extends StatelessWidget {
+class Customtextfield extends StatefulWidget {
   final String hintText;
-  final String Label;
+  final String label;
   final IconData prefixicon;
   final TextEditingController controller;
-  const customtextfield({
+  const Customtextfield({
     super.key,
-    required this.Label,
+    required this.label,
     required this.hintText,
     required this.prefixicon,
     required this.controller,
   });
 
   @override
+  State<Customtextfield> createState() => _CustomtextfieldState();
+}
+
+class _CustomtextfieldState extends State<Customtextfield> {
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          Label,
+          widget.label,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         TextFormField(
-          controller: controller,
+          controller: widget.controller,
           decoration: InputDecoration(
-            prefixIcon: Icon(prefixicon),
-            hintText: hintText,
+            prefixIcon: Icon(widget.prefixicon),
+            hintText: widget.hintText,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(25),
               borderSide: BorderSide(color: Colors.black),
             ),
           ),
         ),
-        
       ],
     );
   }
