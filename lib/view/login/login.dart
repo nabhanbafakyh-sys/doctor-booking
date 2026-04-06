@@ -3,14 +3,21 @@ import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/admin_home.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
+import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view/user/home/user_home.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
-class Loginscren extends StatelessWidget {
-  Loginscren({super.key});
+class Loginscren extends StatefulWidget {
+  const Loginscren({super.key});
 
+  @override
+  State<Loginscren> createState() => _LoginscrenState();
+}
+
+class _LoginscrenState extends State<Loginscren> {
   TextEditingController email = TextEditingController();
+
   TextEditingController password = TextEditingController();
 
   @override
@@ -64,17 +71,17 @@ class Loginscren extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40),
-                    customtextfield(
+                    Customtextfield(
                       hintText: 'Email',
                       controller: email,
-                      Label: "Email Id",
+                      label: "Email Id",
                       prefixicon: Icons.mail_outline_rounded,
                     ),
                     SizedBox(height: 15),
-                    customtextfield(
+                    Customtextfield(
                       hintText: 'Password',
                       controller: password,
-                      Label: "Password",
+                      label: "Password",
                       prefixicon: Icons.lock_outline_sharp,
                     ),
                     SizedBox(height: 30),
@@ -88,7 +95,7 @@ class Loginscren extends StatelessWidget {
                         } else {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => UserHome()),
+                            MaterialPageRoute(builder: (_) => MainScreen()),
                           );
                         }
                       },
@@ -148,7 +155,10 @@ class Loginscren extends StatelessWidget {
                             ),
                             child: Text(
                               'Create account',
-                              style: TextStyle(fontSize: 15),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ),

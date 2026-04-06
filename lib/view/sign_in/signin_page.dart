@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/admin_home.dart';
-import 'package:room_rental/view/user/home/user_home.dart';
+import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
-class SigninPage extends StatelessWidget {
-  SigninPage({super.key});
+class SigninPage extends StatefulWidget {
+  const SigninPage({super.key});
+
+  @override
+  State<SigninPage> createState() => _SigninPageState();
+}
+
+class _SigninPageState extends State<SigninPage> {
   TextEditingController email = TextEditingController();
+
   TextEditingController password = TextEditingController();
 
   @override
@@ -56,22 +63,22 @@ class SigninPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 40),
-                    customtextfield(
+                    Customtextfield(
                       hintText: 'Email',
                       controller: email,
-                      Label: "Email Id",
+                      label: "Email Id",
                       prefixicon: Icons.mail_outline_rounded,
                     ),
                     SizedBox(height: 15),
-                    customtextfield(
+                    Customtextfield(
                       hintText: 'Password',
                       controller: password,
-                      Label: "Password",
+                      label: "Password",
                       prefixicon: Icons.lock_outline_sharp,
                     ),
                     SizedBox(height: 15),
-                    customtextfield(
-                      Label: "Confirm password",
+                    Customtextfield(
+                      label: "Confirm password",
                       hintText: 'Re Enter password',
                       prefixicon: Icons.lock_outline_sharp,
                       controller: password,
@@ -87,7 +94,7 @@ class SigninPage extends StatelessWidget {
                         } else {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => UserHome()),
+                            MaterialPageRoute(builder: (_) => MainScreen()),
                           );
                         }
                       },
@@ -121,15 +128,37 @@ class SigninPage extends StatelessWidget {
                         Expanded(child: Divider(thickness: 1)),
                       ],
                     ),
-                    Text('Sign up with'),
+                    Text(
+                      'Sign up with',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Image.asset(
-                            'assets/Google _G_ Logo.png',
-                            height: 40,
-                            width: 40,
+                        GestureDetector(
+                          onTap: () {},
+                          child: Row(
+                            children: [
+                              Image.asset('assets/google.png'),
+                              Text(
+                                '  Google',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Row(
+                            children: [
+                              Image.asset('assets/facebook.png'),
+                              Text(
+                                'facebook',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ],
                           ),
                         ),
                       ],
