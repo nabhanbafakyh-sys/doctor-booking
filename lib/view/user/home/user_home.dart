@@ -100,20 +100,19 @@ class _UserHomeState extends State<UserHome> {
               ),
               SizedBox(height: 20),
               Text(
-                "Our Doctors",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                "Our Doctors,",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               SizedBox(height: 10),
               Expanded(
                 child: vm.isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? Center(child: CircularProgressIndicator())
                     : vm.doctors.isEmpty
-                    ? const Center(child: Text("No doctors found"))
+                    ? Center(child: Text("No doctors found"))
                     : ListView.builder(
                         itemCount: vm.doctors.length,
                         itemBuilder: (context, index) {
                           final doctor = vm.doctors[index];
-
                           return DoctorCard(
                             name: doctor['name'] ?? '',
                             specialty: doctor['specialization'] ?? '',
