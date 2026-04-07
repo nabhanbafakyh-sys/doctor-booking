@@ -1,48 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:room_rental/view/user/booking/boking_page.dart';
 
 class DoctorCard extends StatelessWidget {
   final String name;
   final String specialty;
   final String rating;
+  final String imageUrl;
 
   const DoctorCard({
     super.key,
     required this.name,
     required this.specialty,
     required this.rating,
+    required this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black12)],
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
       ),
       child: Row(
         children: [
-          Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.lightBlue,
-            ),
-            child: Icon(Icons.person),
+          CircleAvatar(
+            radius: 28,
+            backgroundImage: imageUrl.isNotEmpty
+                ? NetworkImage(imageUrl)
+                : null,
+            child: imageUrl.isEmpty ? Icon(Icons.person) : null,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
 
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(specialty, style: const TextStyle(color: Colors.grey)),
-                SizedBox(height: 6),
-                Text("Available 10:30 AM", style: TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -57,15 +56,26 @@ class DoctorCard extends StatelessWidget {
                 ),
                 child: Text("★ $rating"),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BookingScreen(
+                        doctorName: name,
+                        imageUrl: imageUrl,
+                        specialty: specialty,
+                      ),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: const Text("Book now"),
+                child: Text("Book now"),
               ),
             ],
           ),

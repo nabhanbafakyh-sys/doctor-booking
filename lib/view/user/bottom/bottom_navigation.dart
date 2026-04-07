@@ -3,16 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:room_rental/view/user/appoinment/user_appoinments.dart';
 import 'package:room_rental/view/user/home/user_home.dart';
 import 'package:room_rental/view/user/profile/user_profile.dart';
-import 'package:room_rental/view_model/bottom_nav.dart';
+import 'package:room_rental/view_model/admin_bottom_bar..dart';
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+class UserBottomNav extends StatelessWidget {
+  const UserBottomNav({super.key});
 
   @override
   Widget build(BuildContext context) {
     final navVM = context.watch<BottomNavViewModel>();
 
-    final screens = [UserHome(), UserProfile(), UserAppoinments()];
+    final screens = [UserHome(), UserAppointments(), UserProfile()];
 
     return Scaffold(
       body: screens[navVM.selectedIndex],

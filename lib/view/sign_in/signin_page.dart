@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
-import 'package:room_rental/view/admin/admin_home.dart';
+import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
@@ -89,12 +89,12 @@ class _SigninPageState extends State<SigninPage> {
                         if (roleVM.selectedRole == "admin") {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => AdminHome()),
+                            MaterialPageRoute(builder: (_) => AdminBottomBar()),
                           );
                         } else {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (_) => MainScreen()),
+                            MaterialPageRoute(builder: (_) => UserBottomNav()),
                           );
                         }
                       },
