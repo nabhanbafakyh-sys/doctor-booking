@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:room_rental/view_model/admin_home_VM.dart';
+import 'package:room_rental/view/user/catogeries/general.dart';
+import 'package:room_rental/view_model/admin_home_viewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
 import 'package:room_rental/widgets/doctor_card.dart';
 
@@ -24,19 +26,25 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeViewModel>();
-
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: const Padding(
+        leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: Icon(Icons.person_2_outlined),
         ),
-        title: const Text('Vitality'),
+        title: Text(
+          'Vitality',
+          style: TextStyle(
+            color: Colors.green[300],
+            fontWeight: FontWeight.w700,
+          ),
+        ),
         centerTitle: false,
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.notifications_none_outlined),
+            padding: EdgeInsets.only(right: 20),
+            child: Icon(Icons.notifications, color: Colors.green[300]),
           ),
         ],
       ),
@@ -48,25 +56,26 @@ class _UserHomeState extends State<UserHome> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Hello, User 👋',
+                'Hello, User ',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
               ),
               Text(
                 'Find your doctor',
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey[300],
                 ),
                 child: TextField(
                   decoration: InputDecoration(
-                    icon: Icon(Icons.search_outlined),
+                    prefixIcon: Icon(Icons.search_outlined),
                     hintText: 'Search your doctor, specialties',
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
                 ),
               ),
@@ -84,16 +93,32 @@ class _UserHomeState extends State<UserHome> {
                     CategoryItem(
                       icon: FontAwesomeIcons.hospital,
                       label: 'General',
+                      ontap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => General()),
+                        );
+                      },
                     ),
                     CategoryItem(
                       icon: FontAwesomeIcons.heartPulse,
                       label: 'Cardio',
+                      ontap: () {},
                     ),
-                    CategoryItem(icon: FontAwesomeIcons.brain, label: 'Neuro'),
-                    CategoryItem(icon: FontAwesomeIcons.tooth, label: 'Dental'),
+                    CategoryItem(
+                      icon: FontAwesomeIcons.brain,
+                      label: 'Neuro',
+                      ontap: () {},
+                    ),
+                    CategoryItem(
+                      icon: FontAwesomeIcons.tooth,
+                      label: 'Dental',
+                      ontap: () {},
+                    ),
                     CategoryItem(
                       icon: FontAwesomeIcons.faceSmile,
                       label: 'Pediatrics',
+                      ontap: () {},
                     ),
                   ],
                 ),
@@ -105,22 +130,42 @@ class _UserHomeState extends State<UserHome> {
               ),
               SizedBox(height: 10),
               Expanded(
-                child: vm.isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : vm.doctors.isEmpty
-                    ? Center(child: Text("No doctors found"))
-                    : ListView.builder(
-                        itemCount: vm.doctors.length,
-                        itemBuilder: (context, index) {
-                          final doctor = vm.doctors[index];
-                          return DoctorCard(
-                            name: doctor['name'] ?? '',
-                            specialty: doctor['specialization'] ?? '',
-                            rating: "4.5",
-                            imageUrl: '',
-                          );
-                        },
-                      ),
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('Doctors')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    // 🔄 Loading
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text("Something went wrong"));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return Center(child: Text("No doctors found"));
+                    }
+                    final doctors = snapshot.data!.docs;
+                    return ListView.builder(
+                      itemCount: doctors.length,
+                      itemBuilder: (context, index) {
+                        final doctor = doctors[index].data();
+                        return Center(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.9,
+                            child: DoctorCard(
+                              name: doctor['name'] ?? '',
+                              specialty: doctor['specialization'] ?? '',
+                              rating: doctor['rating'] ?? '',
+                              hospital: doctor['hospital'] ?? "",
+                              imageUrl: '',
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ],
           ),

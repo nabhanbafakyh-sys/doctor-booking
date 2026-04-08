@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:room_rental/view/user/booking/boking_page.dart';
 
@@ -6,6 +7,7 @@ class DoctorCard extends StatelessWidget {
   final String specialty;
   final String rating;
   final String imageUrl;
+  final String hospital;
 
   const DoctorCard({
     super.key,
@@ -13,99 +15,92 @@ class DoctorCard extends StatelessWidget {
     required this.specialty,
     required this.rating,
     required this.imageUrl,
+    required this.hospital,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(14),
+      width: 390,
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+      padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 8)],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          /// 🔹 IMAGE
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              imageUrl,
-              height: 70,
-              width: 70,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 70,
-                  width: 70,
-                  color: Colors.grey.shade200,
-                  child: Icon(Icons.person),
-                );
-              },
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blue[400], // teal
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                imageUrl,
+                height: 90,
+                width: 90,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) =>
+                    Icon(Icons.person, size: 90, color: Colors.white),
+              ),
             ),
           ),
+
           SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 100,
+
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        specialty.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    Icon(Icons.star, color: Color(0xFFFFC107), size: 16),
+                    SizedBox(width: 4),
+                    Text(rating, style: TextStyle(fontWeight: FontWeight.w600)),
+                  ],
+                ),
+
+                SizedBox(height: 6),
                 Text(
                   name,
-                  maxLines: 1,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  specialty,
-                  maxLines: 1,
+                  hospital,
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: Colors.grey),
                 ),
                 SizedBox(height: 6),
-                Row(
-                  children: [
-                    Icon(Icons.circle, size: 8, color: Colors.green),
-                    SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        "Available Today",
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(width: 10),
-          SizedBox(
-            width: 85,
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade100,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    "★ $rating",
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12),
                 SizedBox(
-                  width: double.infinity,
+                  height: 35,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -120,15 +115,14 @@ class DoctorCard extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E2A78),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      backgroundColor: Colors.blue[300],
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
                     child: Text(
-                      "Book now",
-                      style: TextStyle(fontSize: 12, color: Colors.white),
+                      "Book Now",
+                      style: TextStyle(fontSize: 13, color: Colors.white),
                     ),
                   ),
                 ),

@@ -4,6 +4,7 @@ class DoctorModel {
   String specialization;
   String image;
   double rating;
+  String hospital;
 
   DoctorModel({
     this.id = '',
@@ -11,6 +12,7 @@ class DoctorModel {
     required this.specialization,
     required this.image,
     required this.rating,
+    required this.hospital,
   });
 
   factory DoctorModel.fromJson(Map<String, dynamic> json, String id) {
@@ -20,6 +22,7 @@ class DoctorModel {
       specialization: json['specialization'],
       image: json['image'],
       rating: (json['rating'] as num).toDouble(),
+      hospital: json['hospital'],
     );
   }
 
@@ -29,6 +32,7 @@ class DoctorModel {
       'specialization': specialization,
       'image': image,
       'rating': rating,
+      'hospital': hospital,
     };
   }
 }

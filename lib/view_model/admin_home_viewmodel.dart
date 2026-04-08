@@ -6,20 +6,12 @@ class HomeViewModel extends ChangeNotifier {
 
   List<Map<String, dynamic>> doctors = [];
   bool isLoading = false;
-
-  Future<void> fetchDoctors() async {
-    isLoading = true;
-    notifyListeners();
-
-    final snapshot = await _db.collection('Doctors').get();
-
-    debugPrint(" Docs count: ${snapshot.docs.length}");
-
-    doctors = snapshot.docs.map((doc) => doc.data()).toList();
-
-    debugPrint(" Data: $doctors");
-
-    isLoading = false;
-    notifyListeners();
+  void fetchDoctors() {
+    FirebaseFirestore.instance.collection('doctors').snapshots().listen((
+      snapshot,
+    ) {
+      doctors = snapshot.docs.map((e) => e.data()).toList();
+      notifyListeners();
+    });
   }
 }
