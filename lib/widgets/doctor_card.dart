@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:room_rental/view/user/booking/boking_page.dart';
 
@@ -20,7 +19,7 @@ class DoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 390,
+      width: 370,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
@@ -99,6 +98,7 @@ class DoctorCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 6),
+
                 SizedBox(
                   height: 35,
                   child: ElevatedButton(

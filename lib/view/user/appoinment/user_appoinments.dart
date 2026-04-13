@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/appoinment_VM.dart';
 
 class UserAppointments extends StatelessWidget {
@@ -9,117 +11,98 @@ class UserAppointments extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppointmentViewModel>(
       builder: (context, vm, child) {
-        if (vm.appointments.isEmpty && !vm.isLoading) {
-          Future.microtask(() => vm.fetchAppointments());
+        if (vm.appointments.isEmpty && vm.isLoading) {
+          vm.listenAppointments();
         }
-
-        return Scaffold(
-          appBar: AppBar(title: Text("Appointment History")),
-
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+        return WillPopScope(
+          onWillPop: () async {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => UserBottomNav()),
+            );
+            return true;
+          },
+          child: Scaffold(
+            backgroundColor: Colors.grey[100],
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Text("Appointments"),
+              centerTitle: true,
+              automaticallyImplyLeading: false,
+            ),
+            body: Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => vm.toggleTab(true),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: vm.showUpcoming
-                                ? Colors.blue
-                                : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Upcoming",
-                              style: TextStyle(
-                                color: vm.showUpcoming
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(width: 10),
-
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => vm.toggleTab(false),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: BoxDecoration(
-                            color: !vm.showUpcoming
-                                ? Colors.blue
-                                : Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Past",
-                              style: TextStyle(
-                                color: !vm.showUpcoming
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                Container(
+                  height: 60,
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    children: [
+                      _tab("Upcoming", vm.showUpcoming, () {
+                        vm.toggleTab(true);
+                      }),
+                      _tab("Past", !vm.showUpcoming, () {
+                        vm.toggleTab(false);
+                      }),
+                    ],
+                  ),
                 ),
 
                 SizedBox(height: 20),
-
                 Expanded(
                   child: vm.isLoading
                       ? Center(child: CircularProgressIndicator())
-                      : vm.filteredAppointments.isEmpty
+                      : vm.appointments.isEmpty
                       ? Center(child: Text("No appointments"))
                       : ListView.builder(
                           itemCount: vm.filteredAppointments.length,
                           itemBuilder: (context, index) {
                             final appt = vm.filteredAppointments[index];
-
+                            DateTime parsedDate;
+                            try {
+                              parsedDate = DateTime.parse(
+                                appt['date'].toString().split(" ")[0],
+                              );
+                            } catch (e) {
+                              parsedDate = DateTime.now();
+                            }
+                            String date = DateFormat(
+                              'MMM dd, yyyy',
+                            ).format(parsedDate);
+                            String time = appt['time'] ?? '';
                             return Container(
-                              margin: const EdgeInsets.symmetric(vertical: 8),
-                              padding: const EdgeInsets.all(14),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 15,
+                                vertical: 20,
+                              ),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(18),
+                                color: Colors.white70,
+                                borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 6,
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 12,
+                                    offset: Offset(0, 6),
                                   ),
                                 ],
                               ),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        radius: 25,
-                                        backgroundImage:
-                                            (appt['imageUrl'] != null &&
-                                                appt['imageUrl']
-                                                    .toString()
-                                                    .isNotEmpty)
-                                            ? NetworkImage(appt['imageUrl'])
-                                            : null,
-                                        child: appt['imageUrl'] == null
-                                            ? Icon(Icons.person)
-                                            : null,
+                                        radius: 28,
+                                        backgroundColor: Colors.blue[50],
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.blue,
+                                        ),
                                       ),
-                                      SizedBox(width: 10),
+                                      SizedBox(width: 12),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -129,75 +112,97 @@ class UserAppointments extends StatelessWidget {
                                               appt['doctorName'] ?? '',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
+                                                fontSize: 16,
                                               ),
                                             ),
                                             Text(
                                               appt['specialization'] ?? '',
                                               style: TextStyle(
-                                                color: Colors.grey,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            Text(
+                                              appt['hospital'] ?? '',
+                                              style: TextStyle(
+                                                color: Colors.grey[500],
+                                                fontSize: 12,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 4,
+                                          horizontal: 12,
+                                          vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.blue.shade100,
+                                          color: vm.showUpcoming
+                                              ? Colors.green[50]
+                                              : Colors.grey[200],
                                           borderRadius: BorderRadius.circular(
-                                            12,
+                                            20,
                                           ),
                                         ),
                                         child: Text(
                                           vm.showUpcoming ? "UPCOMING" : "PAST",
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.blue,
+                                            fontSize: 11,
+                                            color: vm.showUpcoming
+                                                ? Colors.green
+                                                : Colors.black54,
                                             fontWeight: FontWeight.w600,
                                           ),
                                         ),
                                       ),
                                     ],
                                   ),
-
-                                  SizedBox(height: 12),
+                                  SizedBox(height: 14),
                                   Row(
                                     children: [
-                                      Icon(Icons.calendar_today, size: 16),
-                                      SizedBox(width: 5),
-                                      Text(appt['date'] ?? ''),
-
-                                      SizedBox(width: 20),
-
-                                      Icon(Icons.access_time, size: 16),
-                                      SizedBox(width: 5),
-                                      Text(appt['time'] ?? ''),
+                                      Expanded(
+                                        child: _infoBox(
+                                          Icons.calendar_today,
+                                          date,
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: _infoBox(
+                                          Icons.access_time,
+                                          time,
+                                        ),
+                                      ),
                                     ],
                                   ),
-
-                                  SizedBox(height: 15),
+                                  SizedBox(height: 14),
                                   if (vm.showUpcoming)
                                     Row(
                                       children: [
                                         Expanded(
                                           child: OutlinedButton(
-                                            onPressed: () {
-                                              // TODO cancel
-                                            },
+                                            onPressed: () {},
+                                            style: OutlinedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                            ),
                                             child: Text("Cancel"),
                                           ),
                                         ),
                                         SizedBox(width: 10),
                                         Expanded(
                                           child: ElevatedButton(
-                                            onPressed: () {
-                                              // TODO reschedule
-                                            },
-                                            child: Text("Reschedule"),
+                                            onPressed: () {},
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.blue,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30),
+                                              ),
+                                            ),
+                                            child: const Text("Reschedule"),
                                           ),
                                         ),
                                       ],
@@ -213,6 +218,48 @@ class UserAppointments extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _tab(String text, bool active, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: active ? Colors.blue : Colors.transparent,
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: active ? Colors.white : Colors.black,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _infoBox(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 16, color: Colors.blue),
+          const SizedBox(width: 6),
+          Text(text),
+        ],
+      ),
     );
   }
 }

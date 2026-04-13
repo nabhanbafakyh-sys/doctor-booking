@@ -15,14 +15,15 @@ class UserBottomNav extends StatelessWidget {
     final screens = [UserHome(), UserAppointments(), UserProfile()];
 
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: screens[navVM.selectedIndex],
-
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.grey[100],
         currentIndex: navVM.selectedIndex,
         onTap: navVM.changeIndex,
         selectedItemColor: const Color(0xFF1E2A78),
-        unselectedItemColor: Colors.grey,
-        items: const [
+        unselectedItemColor: Colors.black,
+        items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: "Home",
