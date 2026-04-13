@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:room_rental/view/user/catogeries/general.dart';
-import 'package:room_rental/view_model/admin_home_viewmodel.dart';
+import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
 import 'package:room_rental/widgets/doctor_card.dart';
 

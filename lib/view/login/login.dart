@@ -4,19 +4,14 @@ import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
+import 'package:room_rental/view_model/auth/login.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
-class Loginscren extends StatefulWidget {
-  const Loginscren({super.key});
+class Loginscren extends StatelessWidget {
+  Loginscren({super.key});
 
-  @override
-  State<Loginscren> createState() => _LoginscrenState();
-}
-
-class _LoginscrenState extends State<Loginscren> {
   TextEditingController email = TextEditingController();
-
   TextEditingController password = TextEditingController();
 
   @override
@@ -85,17 +80,20 @@ class _LoginscrenState extends State<Loginscren> {
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        if (roleVM.selectedRole == "admin") {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => AdminBottomBar()),
-                          );
+                      onPressed: () async {
+                        final vm = context.read<loginAuth>();
+
+                        final error = await vm.login(
+                          email.text.trim(),
+                          password.text.trim(),
+                        );
+
+                        if (error == null) {
+                          // ✅ success → navigate
                         } else {
-                          Navigator.pushReplacement(
+                          ScaffoldMessenger.of(
                             context,
-                            MaterialPageRoute(builder: (_) => UserBottomNav()),
-                          );
+                          ).showSnackBar(SnackBar(content: Text(error)));
                         }
                       },
                       style: ElevatedButton.styleFrom(

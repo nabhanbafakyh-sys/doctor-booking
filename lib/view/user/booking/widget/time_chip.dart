@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view_model/booking_doctor.dart';
+import 'package:room_rental/view_model/user/booking_doctor.dart';
 
 Widget timeChip(BuildContext context, String time) {
   final vm = context.watch<BookingVM>();

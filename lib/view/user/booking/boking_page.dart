@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view_model/booking_doctor.dart';
+import 'package:room_rental/view_model/user/booking_doctor.dart';
 
 class BookingScreen extends StatelessWidget {
   final String doctorName;

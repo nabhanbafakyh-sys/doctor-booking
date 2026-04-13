@@ -4,7 +4,7 @@ import 'package:room_rental/view/admin/doctors/doctors_list.dart';
 import 'package:room_rental/view/admin/home/admin_home.dart';
 import 'package:room_rental/view/admin/profile/admin_profile.dart';
 import 'package:room_rental/view/admin/schedule/schedule_screen.dart';
-import 'package:room_rental/view_model/user_bottom_bar.dart';
+import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class AdminBottomBar extends StatelessWidget {
   const AdminBottomBar({super.key});

@@ -5,6 +5,11 @@ class UserProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('tyft')));
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [CircleAvatar(), SizedBox(height: 15)],
+      ),
+    );
   }
 }

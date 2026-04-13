@@ -19,7 +19,7 @@ class DoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 370,
+      width: 390,
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
