@@ -1,29 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
 
-class loginAuth extends ChangeNotifier {
-  FirebaseAuth auth = FirebaseAuth.instance;
-  bool isloading = false;
+// class loginAuth extends ChangeNotifier {
+//   FirebaseAuth auth = FirebaseAuth.instance;
+//   bool isloading = false;
 
-  Future<String?> login(String email, String password) async {
-    try {
-      isloading = true;
-      notifyListeners();
-
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      isloading = false;
-      notifyListeners();
-
-      return null; // success
-    } on FirebaseAuthException catch (e) {
-      isloading = false;
-      notifyListeners();
-      return e.message;
-    }
-  }
-}
+//   Future<void> loginUser({
+//     required String email,
+//     required String password,
+//   }) async {
+//     await FirebaseAuth.instance.signInWithEmailAndPassword(
+//       email: email.trim(),
+//       password: password.trim(),
+//     );
+//   }
+// }

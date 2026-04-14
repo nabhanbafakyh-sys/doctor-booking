@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
-import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
-import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
+import 'package:room_rental/view/user/home/user_home.dart';
+import 'package:room_rental/view_model/auth/sign.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
@@ -15,8 +15,8 @@ class SigninPage extends StatefulWidget {
 
 class _SigninPageState extends State<SigninPage> {
   TextEditingController email = TextEditingController();
-
   TextEditingController password = TextEditingController();
+  TextEditingController username = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -64,55 +64,42 @@ class _SigninPageState extends State<SigninPage> {
                     ),
                     SizedBox(height: 40),
                     Customtextfield(
+                      label: 'Username',
+                      hintText: 'username',
+                      prefixicon: Icons.person,
+                      controller: username,
+                    ),
+                    SizedBox(height: 15),
+                    Customtextfield(
                       hintText: 'Email',
                       controller: email,
                       label: "Email Id",
                       prefixicon: Icons.mail_outline_rounded,
                     ),
+
                     SizedBox(height: 15),
                     Customtextfield(
-                      hintText: 'Password',
-                      controller: password,
                       label: "Password",
-                      prefixicon: Icons.lock_outline_sharp,
-                    ),
-                    SizedBox(height: 15),
-                    Customtextfield(
-                      label: "Confirm password",
-                      hintText: 'Re Enter password',
+                      hintText: 'Enter password',
                       prefixicon: Icons.lock_outline_sharp,
                       controller: password,
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        if (roleVM.selectedRole == "admin") {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => AdminBottomBar()),
+                      onPressed: () async {
+                        try {
+                          await context.read<AuthVM>().registerUser(
+                            username: username.text.trim(),
+                            email: email.text.trim(),
+                            password: password.text.trim(),
                           );
-                        } else {
-                          Navigator.pushReplacement(
+                        } catch (e) {
+                          ScaffoldMessenger.of(
                             context,
-                            MaterialPageRoute(builder: (_) => UserBottomNav()),
-                          );
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryLight,
-                        minimumSize: Size(double.infinity, 55),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: Text(
-                        "create account",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.surfaceLow,
-                        ),
-                      ),
+                      child: const Text("signin "),
                     ),
                     SizedBox(height: 10),
                     Row(

@@ -1,10 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
-import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
-import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
-import 'package:room_rental/view_model/auth/login.dart';
+import 'package:room_rental/view_model/auth/sign.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
@@ -80,36 +79,32 @@ class Loginscren extends StatelessWidget {
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () async {
-                        final vm = context.read<loginAuth>();
-
-                        final error = await vm.login(
-                          email.text.trim(),
-                          password.text.trim(),
-                        );
-
-                        if (error == null) {
-                          // ✅ success → navigate
-                        } else {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(error)));
-                        }
-                      },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryLight,
-                        minimumSize: Size(double.infinity, 55),
+                        backgroundColor: Colors.teal,
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.surfaceLow,
-                        ),
+                      onPressed: () async {
+                        try {
+                          await context.read<AuthVM>().loginUser(
+                            email: email.text.trim(),
+                            password: password.text.trim(),
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Login Successful")),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text("Error: $e")));
+                        }
+                      },
+                      child: const Text(
+                        "LOGIN",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     SizedBox(height: 10),
