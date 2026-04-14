@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view/user/profile/widget/tile.dart';
 import 'package:room_rental/view_model/user/profile.dart';
 
 class UserProfile extends StatelessWidget {
@@ -35,43 +38,44 @@ class UserProfile extends StatelessWidget {
                 ),
                 SizedBox(height: 25),
 
-                buildTile(Icons.calendar_today, "My Appointments"),
-                buildTile(Icons.favorite, "Favorite Doctors"),
-                buildTile(Icons.notifications, "Notifications"),
-                buildTile(Icons.settings, "Settings"),
+                buildTile(
+                  context,
+                  Icons.calendar_today,
+                  "My Appointments",
+                  onTap: () {},
+                ),
+                buildTile(
+                  context,
+                  Icons.favorite,
+                  "Favorite Doctors",
+                  onTap: () {},
+                ),
+                buildTile(
+                  context,
+                  Icons.notifications,
+                  "Notifications",
+                  onTap: () {},
+                ),
+                buildTile(context, Icons.settings, "Settings", onTap: () {}),
                 SizedBox(height: 20),
-                buildTile(Icons.logout, "Logout", isLogout: true),
+                buildTile(
+                  context,
+                  Icons.logout,
+                  "Logout",
+                  onTap: () async {
+                    // 🔹 Navigate to Role Screen (force)
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RoleSelectionScreen(),
+                      ),
+                      (route) => false,
+                    );
+                  },
+                ),
               ],
             ),
           );
-        },
-      ),
-    );
-  }
-
-  // 🔹 Reusable Tile
-  Widget buildTile(IconData icon, String title, {bool isLogout = false}) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: isLogout ? Colors.red : Colors.teal),
-        title: Text(title),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () {
-          if (title == "Logout") {
-            // TODO: Firebase logout
-          }
         },
       ),
     );

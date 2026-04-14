@@ -2,7 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
+import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
+import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/auth/sign.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
@@ -10,8 +12,8 @@ import 'package:room_rental/widgets/textform_feild.dart';
 class Loginscren extends StatelessWidget {
   Loginscren({super.key});
 
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +98,41 @@ class Loginscren extends StatelessWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text("Login Successful")),
                           );
+                          final role = context
+                              .read<RoleViewModel>()
+                              .selectedRole;
+
+                          if (role == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please select a role"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          if (role == "admin") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AdminBottomBar(),
+                              ),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UserBottomNav(),
+                              ),
+                            );
+                          }
                         } catch (e) {
                           ScaffoldMessenger.of(
                             context,
                           ).showSnackBar(SnackBar(content: Text("Error: $e")));
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         "LOGIN",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
