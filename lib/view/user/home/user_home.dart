@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:room_rental/view/user/catogeries/general.dart';
+import 'package:room_rental/view/user/catogeries/cotogeryfilter.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
 import 'package:room_rental/widgets/doctor_card.dart';
@@ -25,7 +25,6 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<HomeViewModel>();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -98,29 +97,65 @@ class _UserHomeState extends State<UserHome> {
                         ontap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => General()),
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDoctorsScreen(category: 'general'),
+                            ),
                           );
                         },
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.heartPulse,
                         label: 'Cardio',
-                        ontap: () {},
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CategoryDoctorsScreen(
+                                category: 'cardiologist',
+                              ),
+                            ),
+                          );
+                        },
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.brain,
                         label: 'Neuro',
-                        ontap: () {},
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDoctorsScreen(category: 'nuerology'),
+                            ),
+                          );
+                        },
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.tooth,
                         label: 'Dental',
-                        ontap: () {},
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDoctorsScreen(category: 'dental'),
+                            ),
+                          );
+                        },
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.faceSmile,
                         label: 'Pediatrics',
-                        ontap: () {},
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDoctorsScreen(category: 'pediatrics'),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

@@ -15,7 +15,7 @@ class Loginscren extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final roleVM = context.watch<RoleViewModel>();
+    // final roleVM = context.watch<RoleViewModel>();
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),

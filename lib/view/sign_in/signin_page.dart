@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
-import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
 class SigninPage extends StatefulWidget {
@@ -19,7 +17,7 @@ class _SigninPageState extends State<SigninPage> {
 
   @override
   Widget build(BuildContext context) {
-    final roleVM = context.watch<RoleViewModel>();
+    // final roleVM = context.watch<RoleViewModel>();
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: Stack(
