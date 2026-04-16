@@ -9,8 +9,8 @@ Widget timeChip(BuildContext context, String time) {
   return ChoiceChip(
     label: Text(time),
     selected: isSelected,
-    selectedColor: Colors.green[800],
-    onSelected: (_) => vm.picktime(time),
+    selectedColor: isSelected ? Colors.teal.shade300 : Colors.teal.shade100,
     labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black),
+    onSelected: (_) => vm.picktime(time),
   );
 }

@@ -27,7 +27,7 @@ class DoctorCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -38,7 +38,7 @@ class DoctorCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.blue[400], // teal
+              color: Colors.white,
               borderRadius: BorderRadius.circular(15),
             ),
             child: ClipRRect(
@@ -49,7 +49,7 @@ class DoctorCard extends StatelessWidget {
                 width: 90,
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) =>
-                    Icon(Icons.person, size: 90, color: Colors.white),
+                    Icon(Icons.person, size: 90, color: Colors.teal),
               ),
             ),
           ),
@@ -64,9 +64,8 @@ class DoctorCard extends StatelessWidget {
                     Container(
                       height: 20,
                       width: 100,
-
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: Colors.teal.shade50,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
@@ -110,12 +109,13 @@ class DoctorCard extends StatelessWidget {
                             doctorName: name,
                             imageUrl: imageUrl,
                             specialty: specialty,
+                            hospital: hospital,
                           ),
                         ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue[300],
+                      backgroundColor: Colors.teal.shade400,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

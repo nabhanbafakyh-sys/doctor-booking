@@ -4,14 +4,14 @@ import 'package:room_rental/view/admin/doctors/doctors_list.dart';
 import 'package:room_rental/view/admin/home/admin_home.dart';
 import 'package:room_rental/view/admin/profile/admin_profile.dart';
 import 'package:room_rental/view/admin/schedule/schedule_screen.dart';
-import 'package:room_rental/view_model/user/user_bottom_bar.dart';
+import 'package:room_rental/view_model/admin/admin_bottom_bar..dart';
 
 class AdminBottomBar extends StatelessWidget {
   const AdminBottomBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<BottomBarviewmodel>();
+    final vm = context.watch<adminbottomVM>();
 
     final pages = [
       AdminHome(),
@@ -21,10 +21,10 @@ class AdminBottomBar extends StatelessWidget {
     ];
 
     return Scaffold(
-      body: pages[vm.selectedpage],
+      body: pages[vm.selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: vm.selectedpage,
-        onTap: vm.changepage,
+        currentIndex: vm.selectedIndex,
+        onTap: vm.changeIndex,
         selectedItemColor: const Color(0xFF1E2A78),
         unselectedItemColor: Colors.grey,
         items: const [

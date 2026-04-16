@@ -1,82 +1,103 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view/user/profile/widget/card.dart';
 import 'package:room_rental/view/user/profile/widget/tile.dart';
 import 'package:room_rental/view_model/user/profile.dart';
+import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class UserProfile extends StatelessWidget {
   const UserProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 🔥 Call API (only once safely)
     Future.microtask(
       () => Provider.of<profileVM>(context, listen: false).getUserName(),
     );
-
-    return Scaffold(
-      backgroundColor: const Color(0xffF5F7FB),
-      appBar: AppBar(
-        title: const Text("Profile"),
-        centerTitle: true,
-        backgroundColor: Colors.teal,
-        elevation: 0,
-      ),
-      body: Consumer<profileVM>(
-        builder: (context, vm, child) {
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(height: 15),
-                Text(
-                  vm.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+    final navVM = context.read<userbotomVM>();
+    return PopScope(
+      canPop: navVM.selectedpage == 0, // ✅ only allow exit on Home
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && navVM.selectedpage != 0) {
+          navVM.changepage(0);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Color(0xffF5F7FB),
+        appBar: AppBar(
+          title: Text("Profile"),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.black,
+        ),
+        body: Consumer<profileVM>(
+          builder: (context, vm, child) {
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  CircleAvatar(
+                    radius: 45,
+                    backgroundImage: NetworkImage(
+                      "https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg",
+                    ),
                   ),
-                ),
-                SizedBox(height: 25),
-
-                buildTile(
-                  context,
-                  Icons.calendar_today,
-                  "My Appointments",
-                  onTap: () {},
-                ),
-                buildTile(
-                  context,
-                  Icons.favorite,
-                  "Favorite Doctors",
-                  onTap: () {},
-                ),
-                buildTile(
-                  context,
-                  Icons.notifications,
-                  "Notifications",
-                  onTap: () {},
-                ),
-                buildTile(context, Icons.settings, "Settings", onTap: () {}),
-                SizedBox(height: 20),
-                buildTile(
-                  context,
-                  Icons.logout,
-                  "Logout",
-                  onTap: () async {
-                    // 🔹 Navigate to Role Screen (force)
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const RoleSelectionScreen(),
+                  SizedBox(height: 10),
+                  Text(
+                    vm.name.isEmpty ? "User Name" : vm.name,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 25),
+                  buildSectionCard(
+                    children: [
+                      buildTile(
+                        Icons.person,
+                        "Personal Information",
+                        onTap: () {},
                       ),
-                      (route) => false,
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        },
+                      buildTile(
+                        Icons.description,
+                        "Medical Records",
+                        onTap: () {},
+                      ),
+                      buildTile(
+                        Icons.history,
+                        "Appointment History",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  buildSectionCard(
+                    children: [
+                      buildTile(Icons.people, "My Doctors", onTap: () {}),
+                      buildTile(Icons.payment, "Payments", onTap: () {}),
+                      buildTile(
+                        Icons.notifications,
+                        "Notifications",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  buildSectionCard(
+                    children: [
+                      buildTile(
+                        Icons.privacy_tip,
+                        "Privacy & Policy",
+                        onTap: () {},
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 25),
+                  buildSectionCard(
+                    children: [buildTile(Icons.logout, 'Logout', onTap: () {})],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

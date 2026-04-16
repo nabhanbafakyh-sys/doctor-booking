@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class BottomBarviewmodel extends ChangeNotifier {
+class userbotomVM extends ChangeNotifier {
   int selectedpage = 0;
 
   void changepage(int index) {

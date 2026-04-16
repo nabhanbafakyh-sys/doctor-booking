@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
-import 'package:room_rental/view/user/home/user_home.dart';
-import 'package:room_rental/view_model/auth/sign.dart';
+import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
@@ -87,17 +86,24 @@ class _SigninPageState extends State<SigninPage> {
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
-                        try {
-                          await context.read<AuthVM>().registerUser(
-                            username: username.text.trim(),
-                            email: email.text.trim(),
-                            password: password.text.trim(),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
+                        // try {
+                        //   await context.read<AuthVM>().registerUser(
+                        //     username: username.text.trim(),
+                        //     email: email.text.trim(),
+                        //     password: password.text.trim(),
+                        //   );
+                        // } catch (e) {
+                        //   ScaffoldMessenger.of(
+                        //     context,
+                        //   ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        // }
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserBottomNav(),
+                          ),
+                        );
                       },
                       child: const Text("signin "),
                     ),

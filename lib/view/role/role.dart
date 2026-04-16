@@ -57,7 +57,7 @@ class RoleSelectionScreen extends StatelessWidget {
               onPressed: roleVM.selectedRole == null
                   ? null
                   : () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => Loginscren()),
                       );

@@ -32,12 +32,12 @@ class _UserHomeState extends State<UserHome> {
         backgroundColor: Colors.white,
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
-          child: Icon(Icons.person_2_outlined),
+          child: Icon(Icons.person_2_outlined, color: Colors.teal.shade300),
         ),
         title: Text(
           'Vitality',
           style: TextStyle(
-            color: Colors.blue[400],
+            color: Colors.teal.shade300,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -45,7 +45,7 @@ class _UserHomeState extends State<UserHome> {
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 20),
-            child: Icon(Icons.notifications, color: Colors.blue[400]),
+            child: Icon(Icons.notifications, color: Colors.teal.shade300),
           ),
         ],
       ),
@@ -136,17 +136,12 @@ class _UserHomeState extends State<UserHome> {
                       .collection('Doctors')
                       .snapshots(),
                   builder: (context, snapshot) {
-                    // 🔄 Loading
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
                     }
-
-                    // ❌ Error
                     if (snapshot.hasError) {
                       return Center(child: Text("Something went wrong"));
                     }
-
-                    // 📭 No Data
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return Center(child: Text("No doctors found"));
                     }
@@ -155,7 +150,7 @@ class _UserHomeState extends State<UserHome> {
 
                     return ListView.builder(
                       shrinkWrap: true, // ✅ IMPORTANT
-                      physics: NeverScrollableScrollPhysics(), // ✅ IMPORTANT
+                      physics: NeverScrollableScrollPhysics(),
                       itemCount: doctors.length,
                       itemBuilder: (context, index) {
                         final doctor = doctors[index].data();

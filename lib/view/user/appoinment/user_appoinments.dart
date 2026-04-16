@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/user/appoinment/widgets/info.dart';
 import 'package:room_rental/view/user/appoinment/widgets/tabs.dart';
-import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/user/appoinment_VM.dart';
+import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class UserAppointments extends StatelessWidget {
   const UserAppointments({super.key});
@@ -16,14 +16,13 @@ class UserAppointments extends StatelessWidget {
         if (vm.appointments.isEmpty && vm.isLoading) {
           vm.listenAppointments();
         }
-
-        return WillPopScope(
-          onWillPop: () async {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => UserBottomNav()),
-            );
-            return true;
+        final navVM = context.read<userbotomVM>();
+        return PopScope(
+          canPop: navVM.selectedpage == 0, // ✅ only allow exit on Home
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && navVM.selectedpage != 0) {
+              navVM.changepage(0);
+            }
           },
           child: Scaffold(
             backgroundColor: Colors.grey[100],
@@ -88,7 +87,9 @@ class UserAppointments extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(22),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.04),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         blurRadius: 14,
                                         offset: Offset(0, 8),
                                       ),
@@ -102,11 +103,11 @@ class UserAppointments extends StatelessWidget {
                                         children: [
                                           CircleAvatar(
                                             radius: 28,
-                                            backgroundColor:
-                                                Colors.blue.shade50,
+                                            backgroundColor: Colors.white,
                                             child: Icon(
                                               Icons.person,
-                                              color: Colors.blue,
+                                              color: Colors.teal.shade400,
+                                              size: 40,
                                             ),
                                           ),
                                           SizedBox(width: 12),
@@ -208,9 +209,10 @@ class UserAppointments extends StatelessWidget {
                                             Expanded(
                                               child: ElevatedButton(
                                                 onPressed: () {},
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.blue,
-                                                  elevation: 0,
+                                                style: OutlinedButton.styleFrom(
+                                                  side: BorderSide(
+                                                    color: Colors.grey.shade300,
+                                                  ),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(

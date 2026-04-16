@@ -3,24 +3,24 @@ import 'package:provider/provider.dart';
 import 'package:room_rental/view/user/appoinment/user_appoinments.dart';
 import 'package:room_rental/view/user/home/user_home.dart';
 import 'package:room_rental/view/user/profile/user_profile.dart';
-import 'package:room_rental/view_model/admin/admin_bottom_bar..dart';
+import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class UserBottomNav extends StatelessWidget {
   const UserBottomNav({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final navVM = context.watch<BottomNavViewModel>();
+    final navVM = context.watch<userbotomVM>();
 
     final screens = [UserHome(), UserAppointments(), UserProfile()];
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: screens[navVM.selectedIndex],
+      body: screens[navVM.selectedpage],
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.grey[100],
-        currentIndex: navVM.selectedIndex,
-        onTap: navVM.changeIndex,
+        currentIndex: navVM.selectedpage,
+        onTap: navVM.changepage,
         selectedItemColor: const Color(0xFF1E2A78),
         unselectedItemColor: Colors.black,
         items: [

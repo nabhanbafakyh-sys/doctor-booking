@@ -24,7 +24,7 @@ class CategoryItem extends StatelessWidget {
         margin: const EdgeInsets.only(right: 12),
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? Colors.blue[300] : Colors.grey.shade200,
+          color: selected ? Colors.teal.shade400 : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -33,7 +33,7 @@ class CategoryItem extends StatelessWidget {
             FaIcon(
               icon,
               size: 25,
-              color: selected ? Colors.white : Colors.blue[300],
+              color: selected ? Colors.white : Colors.teal.shade400,
             ),
             SizedBox(height: 6),
             Text(label),
