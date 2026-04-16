@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view/user/profile/widget/card.dart';
 import 'package:room_rental/view/user/profile/widget/tile.dart';
 import 'package:room_rental/view_model/user/profile.dart';
@@ -91,7 +92,20 @@ class UserProfile extends StatelessWidget {
                   ),
                   SizedBox(height: 25),
                   buildSectionCard(
-                    children: [buildTile(Icons.logout, 'Logout', onTap: () {})],
+                    children: [
+                      buildTile(
+                        Icons.logout,
+                        'Logout',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RoleSelectionScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),

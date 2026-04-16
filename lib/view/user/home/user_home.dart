@@ -198,7 +198,8 @@ class _UserHomeState extends State<UserHome> {
                               specialty: doctor['specialization'] ?? '',
                               rating: doctor['rating'] ?? '',
                               hospital: doctor['hospital'] ?? "",
-                              imageUrl: '',
+                              imageUrl:
+                                  'https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg',
                             ),
                           ),
                         );
