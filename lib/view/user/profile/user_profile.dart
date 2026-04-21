@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view/user/my_doctors/my_doctors.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 import 'package:room_rental/view_model/user/profile.dart';
 import 'package:room_rental/view_model/user/user_bottom_bar.dart';
@@ -15,14 +16,14 @@ class UserProfile extends StatelessWidget {
     );
     final navVM = context.read<userbotomVM>();
     return PopScope(
-      canPop: navVM.selectedpage == 0, // ✅ only allow exit on Home
+      canPop: navVM.selectedpage == 0,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && navVM.selectedpage != 0) {
           navVM.changepage(0);
         }
       },
       child: Scaffold(
-        backgroundColor: Color(0xffF5F7FB),
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text("Profile"),
           centerTitle: true,
@@ -70,7 +71,16 @@ class UserProfile extends StatelessWidget {
                   SizedBox(height: 15),
                   buildSectionCard(
                     children: [
-                      buildTile(Icons.people, "My Doctors", onTap: () {}),
+                      buildTile(
+                        Icons.people,
+                        "My Doctors",
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => MyDoctorsPage()),
+                          );
+                        },
+                      ),
                       buildTile(Icons.payment, "Payments", onTap: () {}),
                       buildTile(
                         Icons.notifications,

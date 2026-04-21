@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class BookingVM extends ChangeNotifier {
@@ -24,6 +25,7 @@ class BookingVM extends ChangeNotifier {
     if (selecteddate == null || selectedtime == null) return;
 
     await booking.collection('appointments').add({
+      'userId': FirebaseAuth.instance.currentUser!.uid,
       "doctorName": doctorName,
       "userName": userName,
       "date": selecteddate.toString(),

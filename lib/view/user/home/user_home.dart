@@ -1,36 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:room_rental/view/user/catogeries/cotogeryfilter.dart';
-import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
 import 'package:room_rental/widgets/doctor_card.dart';
 
-class UserHome extends StatefulWidget {
+class UserHome extends StatelessWidget {
   const UserHome({super.key});
 
   @override
-  State<UserHome> createState() => _UserHomeState();
-}
-
-class _UserHomeState extends State<UserHome> {
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      context.read<HomeViewModel>().fetchDoctors();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: Padding(
-          padding: EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: 16),
           child: Icon(Icons.person_2_outlined, color: Colors.teal.shade300),
         ),
         title: Text(
@@ -40,10 +29,9 @@ class _UserHomeState extends State<UserHome> {
             fontWeight: FontWeight.w700,
           ),
         ),
-        centerTitle: false,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.only(right: 20),
             child: Icon(Icons.notifications, color: Colors.teal.shade300),
           ),
         ],
@@ -56,36 +44,72 @@ class _UserHomeState extends State<UserHome> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Hello, User ',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+                /// 👤 USERNAME FROM FIREBASE
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('Users')
+                      .doc(userId)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || !snapshot.data!.exists) {
+                      return const Text(
+                        "Hello, User",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 26,
+                        ),
+                      );
+                    }
+
+                    final data = snapshot.data!.data() as Map<String, dynamic>?;
+
+                    final name = data?['name'] ?? "User";
+
+                    return Text(
+                      "Hello, $name 👋",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 26,
+                      ),
+                    );
+                  },
                 ),
-                Text(
+
+                const SizedBox(height: 5),
+
+                const Text(
                   'Find your doctor',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-                SizedBox(height: 20),
+
+                const SizedBox(height: 20),
+
+                /// 🔍 SEARCH BAR
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.grey[300],
                   ),
-                  child: TextField(
+                  child: const TextField(
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search_outlined),
                       hintText: 'Search your doctor, specialties',
                       border: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
+
+                const SizedBox(height: 20),
+
+                /// 🏥 CATEGORY TITLE
+                const Text(
                   "Departments",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+
+                /// 📂 CATEGORY LIST
                 SizedBox(
                   height: 80,
                   child: ListView(
@@ -98,7 +122,7 @@ class _UserHomeState extends State<UserHome> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
+                              builder: (_) =>
                                   CategoryDoctorsScreen(category: 'general'),
                             ),
                           );
@@ -111,7 +135,7 @@ class _UserHomeState extends State<UserHome> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CategoryDoctorsScreen(
+                              builder: (_) => CategoryDoctorsScreen(
                                 category: 'cardiologist',
                               ),
                             ),
@@ -125,8 +149,8 @@ class _UserHomeState extends State<UserHome> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CategoryDoctorsScreen(category: 'nuerology'),
+                              builder: (_) =>
+                                  CategoryDoctorsScreen(category: 'neurology'),
                             ),
                           );
                         },
@@ -138,21 +162,8 @@ class _UserHomeState extends State<UserHome> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
+                              builder: (_) =>
                                   CategoryDoctorsScreen(category: 'dental'),
-                            ),
-                          );
-                        },
-                      ),
-                      CategoryItem(
-                        icon: FontAwesomeIcons.faceSmile,
-                        label: 'Pediatrics',
-                        ontap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CategoryDoctorsScreen(category: 'pediatrics'),
                             ),
                           );
                         },
@@ -160,35 +171,40 @@ class _UserHomeState extends State<UserHome> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-                Text(
-                  "Our Doctors,",
+
+                const SizedBox(height: 20),
+
+                /// 👨‍⚕️ DOCTORS TITLE
+                const Text(
+                  "Our Doctors",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
-                SizedBox(height: 10),
-                StreamBuilder(
+
+                const SizedBox(height: 10),
+
+                /// 👨‍⚕️ DOCTORS LIST
+                StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Doctors')
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
-                    if (snapshot.hasError) {
-                      return Center(child: Text("Something went wrong"));
-                    }
+
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return Center(child: Text("No doctors found"));
+                      return const Center(child: Text("No doctors found"));
                     }
 
                     final doctors = snapshot.data!.docs;
 
                     return ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: doctors.length,
                       itemBuilder: (context, index) {
-                        final doctor = doctors[index].data();
+                        final doctor =
+                            doctors[index].data() as Map<String, dynamic>;
 
                         return Center(
                           child: SizedBox(
@@ -199,7 +215,7 @@ class _UserHomeState extends State<UserHome> {
                               rating: doctor['rating'] ?? '',
                               hospital: doctor['hospital'] ?? "",
                               imageUrl:
-                                  'https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg',
+                                  'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                             ),
                           ),
                         );

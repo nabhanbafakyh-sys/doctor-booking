@@ -1,6 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
+import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
+import 'package:room_rental/view/login/login.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
+import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
 class SigninPage extends StatefulWidget {
@@ -11,9 +17,10 @@ class SigninPage extends StatefulWidget {
 }
 
 class _SigninPageState extends State<SigninPage> {
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController username = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  final TextEditingController username = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -84,24 +91,66 @@ class _SigninPageState extends State<SigninPage> {
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
-                        // try {
-                        //   await context.read<AuthVM>().registerUser(
-                        //     username: username.text.trim(),
-                        //     email: email.text.trim(),
-                        //     password: password.text.trim(),
-                        //   );
-                        // } catch (e) {
-                        //   ScaffoldMessenger.of(
-                        //     context,
-                        //   ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        // }
+                        try {
+                          final role = context
+                              .read<RoleViewModel>()
+                              .selectedRole;
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => UserBottomNav(),
-                          ),
-                        );
+                          if (role == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Please select a role"),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // 🔐 Create user
+                          final cred = await FirebaseAuth.instance
+                              .createUserWithEmailAndPassword(
+                                email: email.text.trim(),
+                                password: password.text.trim(),
+                              );
+
+                          final user = cred.user;
+
+                          // 💾 Save user details in Firestore
+                          await FirebaseFirestore.instance
+                              .collection('Users')
+                              .doc(user!.uid)
+                              .set({
+                                'name': username.text.trim(),
+                                'email': user.email,
+                                'phone': phoneController.text.trim(),
+                                'role': role, // ⭐ admin / user
+                                'image': "",
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
+
+                          print("User stored in Firestore ✅");
+
+                          // 🚀 Navigate directly after signup
+                          if (role == "admin") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminBottomBar(),
+                              ),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const UserBottomNav(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          print("Signup error: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Signup failed: $e")),
+                          );
+                        }
                       },
                       child: const Text("signin "),
                     ),

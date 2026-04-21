@@ -1,10 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
-import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
 class Loginscren extends StatelessWidget {
@@ -45,7 +45,7 @@ class Loginscren extends StatelessWidget {
                   children: [
                     SizedBox(height: 50),
                     Image.network(
-                      "https://noblewealthplanning.com/wp-content/uploads/2021/06/1-3.png",
+                      "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
                       height: 110,
                     ),
                     Text(
@@ -86,62 +86,51 @@ class Loginscren extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      // onPressed: () async {
-                      //   try {
-                      //     await context.read<AuthVM>().loginUser(
-                      //       email: email.text.trim(),
-                      //       password: password.text.trim(),
-                      //     );
+                      onPressed: () async {
+                        try {
+                          // 🔐 Login
+                          final cred = await FirebaseAuth.instance
+                              .signInWithEmailAndPassword(
+                                email: email.text.trim(),
+                                password: password.text.trim(),
+                              );
 
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(content: Text("Login Successful")),
-                      //     );
-                      //     final role = context
-                      //         .read<RoleViewModel>()
-                      //         .selectedRole;
+                          final user = cred.user;
 
-                      //     if (role == null) {
-                      //       ScaffoldMessenger.of(context).showSnackBar(
-                      //          SnackBar(
-                      //           content: Text("Please select a role"),
-                      //         ),
-                      //       );
-                      //       return;
-                      //     }
+                          // 📥 Get user role from Firestore
+                          final doc = await FirebaseFirestore.instance
+                              .collection('Users')
+                              .doc(user!.uid)
+                              .get();
 
-                      //     if (role == "admin") {
-                      //       Navigator.pushReplacement(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //           builder: (_) => AdminBottomBar(),
-                      //         ),
-                      //       );
-                      //     } else {
-                      //       Navigator.pushReplacement(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //           builder: (_) => UserBottomNav(),
-                      //         ),
-                      //       );
-                      //     }
-                      //   } catch (e) {
-                      //     ScaffoldMessenger.of(
-                      //       context,
-                      //     ).showSnackBar(SnackBar(content: Text("Error: $e")));
-                      //   }
-                      // },
-                      onPressed: () {
-                        final role = context.read<RoleViewModel>().selectedRole;
+                          if (!doc.exists) {
+                            throw Exception("User data not found");
+                          }
 
-                        if (role == "admin") {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => AdminBottomBar()),
-                          );
-                        } else {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (_) => UserBottomNav()),
+                          final role = doc['role'];
+
+                          print("Logged in as: $role");
+
+                          // 🚀 Navigate based on role
+                          if (role == "admin") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AdminBottomBar(),
+                              ),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const UserBottomNav(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          print("Login error: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Login failed: $e")),
                           );
                         }
                       },
