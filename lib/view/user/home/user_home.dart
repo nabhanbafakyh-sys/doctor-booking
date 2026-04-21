@@ -184,7 +184,7 @@ class _UserHomeState extends State<UserHome> {
                     final doctors = snapshot.data!.docs;
 
                     return ListView.builder(
-                      shrinkWrap: true, // ✅ IMPORTANT
+                      shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: doctors.length,
                       itemBuilder: (context, index) {

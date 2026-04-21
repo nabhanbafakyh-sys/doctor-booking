@@ -27,7 +27,7 @@ class AdminBottomBar extends StatelessWidget {
         onTap: vm.changeIndex,
         selectedItemColor: const Color(0xFF1E2A78),
         unselectedItemColor: Colors.grey,
-        items: const [
+        items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.medical_services),

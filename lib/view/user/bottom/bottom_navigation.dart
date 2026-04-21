@@ -15,10 +15,9 @@ class UserBottomNav extends StatelessWidget {
     final screens = [UserHome(), UserAppointments(), UserProfile()];
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: screens[navVM.selectedpage],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         currentIndex: navVM.selectedpage,
         onTap: navVM.changepage,
         selectedItemColor: const Color(0xFF1E2A78),

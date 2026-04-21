@@ -17,10 +17,7 @@ class RoleSelectionScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 60),
-            Image.network(
-              "https://noblewealthplanning.com/wp-content/uploads/2021/06/1-3.png",
-              height: 250,
-            ),
+            Image.asset("assets/role.png", height: 250),
             SizedBox(height: 20),
             Text(
               "Welcome",

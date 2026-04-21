@@ -10,7 +10,7 @@ class CategoryDoctorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
         title: Text(category),

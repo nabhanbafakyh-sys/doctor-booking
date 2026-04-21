@@ -24,7 +24,7 @@ class DoctorCard extends StatelessWidget {
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -60,30 +60,39 @@ class DoctorCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      height: 20,
-                      width: 100,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.teal.shade50,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         specialty.toUpperCase(),
-                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
-                    SizedBox(width: 20),
-                    Icon(Icons.star, color: Color(0xFFFFC107), size: 16),
-                    SizedBox(width: 4),
-                    Text(rating, style: TextStyle(fontWeight: FontWeight.w600)),
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: Color(0xFFFFC107), size: 16),
+                        Text(
+                          rating,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-
                 SizedBox(height: 6),
                 Text(
                   name,

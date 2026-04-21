@@ -104,8 +104,8 @@ class BookingScreen extends StatelessWidget {
                           margin: const EdgeInsets.only(right: 10),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? Colors.teal.shade200
-                                : Colors.teal.shade100,
+                                ? Colors.teal.shade300
+                                : Colors.teal.shade200,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -113,7 +113,10 @@ class BookingScreen extends StatelessWidget {
                             children: [
                               Text(
                                 DateFormat('EEE').format(date),
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                               Text(
                                 date.day.toString(),
