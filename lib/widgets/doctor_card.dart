@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:room_rental/view/doctor_details/doctor_details.dart';
 import 'package:room_rental/view/user/booking/boking_page.dart';
 
 class DoctorCard extends StatelessWidget {
@@ -7,6 +8,9 @@ class DoctorCard extends StatelessWidget {
   final String rating;
   final String imageUrl;
   final String hospital;
+  final bool isAdmin;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const DoctorCard({
     super.key,
@@ -15,7 +19,11 @@ class DoctorCard extends StatelessWidget {
     required this.rating,
     required this.imageUrl,
     required this.hospital,
+    this.isAdmin = false,
+    this.onEdit,
+    this.onDelete,
   });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -107,33 +115,113 @@ class DoctorCard extends StatelessWidget {
                 ),
                 SizedBox(height: 6),
 
-                SizedBox(
-                  height: 35,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => BookingScreen(
-                            doctorName: name,
-                            imageUrl: imageUrl,
-                            specialty: specialty,
-                            hospital: hospital,
+                Row(
+                  children: [
+                    if (!isAdmin) ...[
+                      Expanded(
+                        child: SizedBox(
+                          height: 36,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => BookingScreen(
+                                    doctorName: name,
+                                    imageUrl: imageUrl,
+                                    specialty: specialty,
+                                    hospital: hospital,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal.shade400,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: FittedBox(
+                              child: Text(
+                                "Book Now",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal.shade400,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
                       ),
-                    ),
-                    child: Text(
-                      "Book Now",
-                      style: TextStyle(fontSize: 13, color: Colors.white),
-                    ),
-                  ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: SizedBox(
+                          height: 36,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DoctorDetailsPage(
+                                    data: {
+                                      'name': name,
+                                      'specialization': specialty,
+                                      'hospital': hospital,
+                                      'rating': rating,
+                                      'image': imageUrl,
+                                      'bio': '',
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.teal,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            child: Text(
+                              "Details",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: onEdit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade300,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Edit",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: onDelete,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal.shade300,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
               ],
             ),

@@ -14,10 +14,10 @@ class Customtextfield extends StatefulWidget {
   });
 
   @override
-  State<Customtextfield> createState() => _CustomtextfieldState();
+  State<Customtextfield> createState() => CustomtextfieldState();
 }
 
-class _CustomtextfieldState extends State<Customtextfield> {
+class CustomtextfieldState extends State<Customtextfield> {
   @override
   Widget build(BuildContext context) {
     return Column(

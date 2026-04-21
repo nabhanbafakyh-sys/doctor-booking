@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
 import 'package:room_rental/widgets/doctor_card.dart';
 
 class AdminHome extends StatelessWidget {
@@ -60,7 +61,14 @@ class AdminHome extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddDoctorPage(),
+                          ),
+                        );
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -105,6 +113,47 @@ class AdminHome extends StatelessWidget {
                               imageUrl:
                                   data['image'] ??
                                   'https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg',
+                              isAdmin: true,
+                              onEdit: () {
+                                // navigate to edit page
+                              },
+                              onDelete: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text("Delete Doctor"),
+                                      content: Text(
+                                        "Are you sure you want to delete this doctor?",
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text("Cancel"),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            await FirebaseFirestore.instance
+                                                .collection('Doctors')
+                                                .doc(doc.id)
+                                                .delete();
+
+                                            Navigator.pop(
+                                              context,
+                                            ); // close dialog
+                                          },
+                                          child: Text(
+                                            "Delete",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ),
                         );

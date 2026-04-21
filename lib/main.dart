@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
+import 'package:room_rental/view_model/admin/doctor_addVM.dart';
 import 'package:room_rental/view_model/user/appoinment_VM.dart';
 import 'package:room_rental/view_model/user/profile.dart';
 import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 import 'package:room_rental/view_model/user/booking_doctor.dart';
-import 'package:room_rental/view_model/admin/admin_bottom_bar..dart';
+import 'package:room_rental/view_model/admin/admin_bottom_bar.dart';
 import 'package:room_rental/view_model/role.dart';
 
 Future<void> main(List<String> args) async {
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AppointmentViewModel()),
         // ChangeNotifierProvider(create: (_) => AuthVM()),
         ChangeNotifierProvider(create: (_) => profileVM()),
+        ChangeNotifierProvider(create: (_) => DoctorViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
