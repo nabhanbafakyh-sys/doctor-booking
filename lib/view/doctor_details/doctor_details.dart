@@ -1,18 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/edit_doctor/edit_doctor.dart';
+import 'package:room_rental/view/doctor_details/widgets/widgets.dart';
+import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 
 class DoctorDetailsPage extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final String docId;
+  final bool isAdmin;
 
-  const DoctorDetailsPage({super.key, required this.data});
+  const DoctorDetailsPage({
+    super.key,
+    required this.docId,
+    this.isAdmin = false,
+    required Map<String, Object> data,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<HomeViewModel>();
+
+    final doctorList = vm.doctors.where((d) => d['id'] == docId).toList();
+
+    if (doctorList.isEmpty) {
+      return const Scaffold(body: Center(child: Text("Doctor not found")));
+    }
+
+    final doctor = doctorList[0];
+
     return Scaffold(
       backgroundColor: Colors.white,
 
       body: SingleChildScrollView(
         child: Column(
           children: [
+            /// 🔹 IMAGE + BACK BUTTON
             Stack(
               children: [
                 ClipRRect(
@@ -20,12 +41,18 @@ class DoctorDetailsPage extends StatelessWidget {
                     bottom: Radius.circular(30),
                   ),
                   child: Image.network(
-                    data['image'],
+                    doctor['image'] ?? '',
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 300,
+                      color: Colors.grey.shade300,
+                      child: const Icon(Icons.person, size: 80),
+                    ),
                   ),
                 ),
+
                 Positioned(
                   top: 40,
                   left: 16,
@@ -37,39 +64,41 @@ class DoctorDetailsPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data['name'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          data['specialization'] ?? '',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
               ],
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
+            /// 🔹 NAME + SPECIALIZATION
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    doctor['name'] ?? '',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    doctor['specialization'] ?? '',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            /// 🔹 INFO CARDS
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -78,23 +107,24 @@ class DoctorDetailsPage extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
+            /// 🔹 RATING
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: Colors.teal,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${data['rating'] ?? '0'}/5.0",
-                    style: TextStyle(color: Colors.white),
+                    "${doctor['rating'] ?? '0'}/5.0",
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  Row(
+                  const Row(
                     children: [
                       Icon(Icons.star, color: Colors.white),
                       SizedBox(width: 5),
@@ -105,8 +135,7 @@ class DoctorDetailsPage extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
             sectionTitle("About Specialist"),
 
             Padding(
@@ -118,48 +147,43 @@ class DoctorDetailsPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Text(
-                  data['bio'] ?? "No bio available",
+                  doctor['bio'] ?? "No bio available",
                   style: TextStyle(color: Colors.grey[700]),
                 ),
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
           ],
         ),
       ),
-    );
-  }
 
-  // 🔹 reusable widgets
-
-  Widget infoCard(String title, String value) {
-    return Container(
-      width: 120,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        children: [
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
-          Text(title, style: TextStyle(color: Colors.grey)),
-        ],
-      ),
-    );
-  }
-
-  Widget sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
+      bottomNavigationBar: isAdmin
+          ? Padding(
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          EditDoctorPage(docId: docId, data: doctor),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit),
+                label: const Text("Edit Doctor"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

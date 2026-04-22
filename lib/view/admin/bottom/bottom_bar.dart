@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/appoinments/appoinments_screen.dart';
 import 'package:room_rental/view/admin/home/admin_home.dart';
 import 'package:room_rental/view/admin/profile/admin_profile.dart';
-import 'package:room_rental/view/admin/schedule/schedule_screen.dart';
 import 'package:room_rental/view_model/admin/admin_bottom_bar.dart';
 
 class AdminBottomBar extends StatelessWidget {
@@ -10,9 +10,9 @@ class AdminBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<adminbottomVM>();
+    final vm = context.watch<AdminBottomBarvm>();
 
-    final pages = [AdminHome(), ScheduleScreen(), AdminProfile()];
+    final pages = [AdminHome(), AdminAppointmentsPage(), AdminProfile()];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -27,7 +27,7 @@ class AdminBottomBar extends StatelessWidget {
 
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            label: "Schedule",
+            label: "Appoinments",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],

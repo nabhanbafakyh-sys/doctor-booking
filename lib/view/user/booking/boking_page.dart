@@ -163,7 +163,7 @@ class BookingScreen extends StatelessWidget {
               onPressed: () async {
                 await vm.bookAppointment(
                   doctorName: doctorName,
-                  userName: "User",
+                  specialty: specialty,
                 );
                 ScaffoldMessenger.of(
                   context,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view_model/admin/doctor_addVM.dart';
 
 class AddDoctorPage extends StatelessWidget {
@@ -18,7 +19,15 @@ class AddDoctorPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Icon(Icons.arrow_back, color: Colors.black),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AdminBottomBar()),
+            );
+          },
+          icon: Icon(Icons.arrow_back),
+        ),
         title: Text(
           "Add New Doctor",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

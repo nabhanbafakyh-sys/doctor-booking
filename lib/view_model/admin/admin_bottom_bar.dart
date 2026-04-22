@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class adminbottomVM extends ChangeNotifier {
+class AdminBottomBarvm extends ChangeNotifier {
   int selectedIndex = 0;
 
   void changeIndex(int index) {

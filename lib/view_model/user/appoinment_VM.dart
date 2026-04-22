@@ -12,7 +12,7 @@ class AppointmentViewModel extends ChangeNotifier {
     debugPrint("LISTENER STARTED");
 
     _db.collection('appointments').snapshots().listen((snapshot) {
-      debugPrint("📦 DATA COUNT: ${snapshot.docs.length}");
+      debugPrint("DATA COUNT: ${snapshot.docs.length}");
 
       appointments = snapshot.docs.map((doc) => doc.data()).toList();
       appointments.sort(

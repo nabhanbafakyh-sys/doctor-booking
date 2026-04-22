@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:room_rental/widgets/doctor_card.dart';
+import 'package:room_rental/view/user/home/widgets/doctor_card.dart';
 
 class MyDoctorsPage extends StatelessWidget {
   const MyDoctorsPage({super.key});
@@ -35,8 +35,8 @@ class MyDoctorsPage extends StatelessWidget {
 
               return DoctorCard(
                 name: data['doctorName'] ?? '',
-                specialty: data['specialization'] ?? '',
-                rating: "4.5", // optional default
+                specialization: data['specialization'] ?? '',
+                rating: 4.5, // optional default
                 hospital: data['hospital'] ?? '',
                 imageUrl: data['image'] ?? '',
               );

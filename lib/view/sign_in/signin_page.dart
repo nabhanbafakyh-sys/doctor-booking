@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
-import 'package:room_rental/view/login/login.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
@@ -95,7 +94,6 @@ class _SigninPageState extends State<SigninPage> {
                           final role = context
                               .read<RoleViewModel>()
                               .selectedRole;
-
                           if (role == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -104,8 +102,6 @@ class _SigninPageState extends State<SigninPage> {
                             );
                             return;
                           }
-
-                          // 🔐 Create user
                           final cred = await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                                 email: email.text.trim(),
@@ -113,8 +109,6 @@ class _SigninPageState extends State<SigninPage> {
                               );
 
                           final user = cred.user;
-
-                          // 💾 Save user details in Firestore
                           await FirebaseFirestore.instance
                               .collection('Users')
                               .doc(user!.uid)
@@ -122,14 +116,10 @@ class _SigninPageState extends State<SigninPage> {
                                 'name': username.text.trim(),
                                 'email': user.email,
                                 'phone': phoneController.text.trim(),
-                                'role': role, // ⭐ admin / user
+                                'role': role,
                                 'image': "",
                                 'createdAt': FieldValue.serverTimestamp(),
                               });
-
-                          print("User stored in Firestore ✅");
-
-                          // 🚀 Navigate directly after signup
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,

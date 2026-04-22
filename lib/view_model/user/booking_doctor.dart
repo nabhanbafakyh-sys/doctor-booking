@@ -20,18 +20,37 @@ class BookingVM extends ChangeNotifier {
 
   Future<void> bookAppointment({
     required String doctorName,
-    required String userName,
+    required String specialty,
   }) async {
-    if (selecteddate == null || selectedtime == null) return;
+    try {
+      if (selecteddate == null || selectedtime == null) return;
 
-    await booking.collection('appointments').add({
-      'userId': FirebaseAuth.instance.currentUser!.uid,
-      "doctorName": doctorName,
-      "userName": userName,
-      "date": selecteddate.toString(),
-      "time": selectedtime,
-      "status": "confirmed",
-      "createdAt": Timestamp.now(),
-    });
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        throw Exception("User not logged in");
+      }
+      final userDoc = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user.uid)
+          .get();
+
+      final userData = userDoc.data();
+      final userName = userData?['name'] ?? "User";
+      await booking.collection('appointments').add({
+        'userId': user.uid,
+        'doctorName': doctorName,
+        'specialization': specialty,
+        'userName': userName,
+        'date': selecteddate!.toIso8601String(),
+        'time': selectedtime,
+        'status': "confirmed",
+        'createdAt': Timestamp.now(),
+      });
+
+      debugPrint("Appointment booked successfully");
+    } catch (e) {
+      debugPrint("Booking error: $e");
+    }
   }
 }

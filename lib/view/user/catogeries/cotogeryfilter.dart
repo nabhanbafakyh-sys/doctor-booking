@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:room_rental/widgets/doctor_card.dart';
+import 'package:room_rental/view/user/home/widgets/doctor_card.dart';
 
 class CategoryDoctorsScreen extends StatelessWidget {
   final String category;
@@ -45,8 +45,8 @@ class CategoryDoctorsScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: DoctorCard(
                   name: doctor['name'] ?? '',
-                  specialty: doctor['specialization'] ?? '',
-                  rating: doctor['rating']?.toString() ?? '',
+                  specialization: doctor['specialization'] ?? '',
+                  rating: doctor['rating'],
                   hospital: doctor['hospital'] ?? '',
                   imageUrl: doctor['image'] ?? '',
                 ),

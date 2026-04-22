@@ -81,23 +81,19 @@ class Loginscren extends StatelessWidget {
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
-                        minimumSize: const Size(double.infinity, 50),
+                        minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                       onPressed: () async {
                         try {
-                          // 🔐 Login
                           final cred = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
                                 email: email.text.trim(),
                                 password: password.text.trim(),
                               );
-
                           final user = cred.user;
-
-                          // 📥 Get user role from Firestore
                           final doc = await FirebaseFirestore.instance
                               .collection('Users')
                               .doc(user!.uid)
@@ -106,12 +102,8 @@ class Loginscren extends StatelessWidget {
                           if (!doc.exists) {
                             throw Exception("User data not found");
                           }
-
                           final role = doc['role'];
-
                           print("Logged in as: $role");
-
-                          // 🚀 Navigate based on role
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,
@@ -123,7 +115,7 @@ class Loginscren extends StatelessWidget {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const UserBottomNav(),
+                                builder: (_) => UserBottomNav(),
                               ),
                             );
                           }

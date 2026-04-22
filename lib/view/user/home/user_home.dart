@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:room_rental/view/user/catogeries/cotogeryfilter.dart';
 import 'package:room_rental/widgets/catogery.dart';
-import 'package:room_rental/widgets/doctor_card.dart';
+import 'package:room_rental/view/user/home/widgets/doctor_card.dart';
 
 class UserHome extends StatelessWidget {
   const UserHome({super.key});
@@ -44,7 +44,7 @@ class UserHome extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 👤 USERNAME FROM FIREBASE
+                /// 🔹 USER NAME
                 StreamBuilder<DocumentSnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Users')
@@ -84,7 +84,7 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                /// 🔍 SEARCH BAR
+                /// 🔹 SEARCH
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -101,7 +101,7 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                /// 🏥 CATEGORY TITLE
+                /// 🔹 CATEGORIES
                 const Text(
                   "Departments",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
@@ -109,7 +109,6 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                /// 📂 CATEGORY LIST
                 SizedBox(
                   height: 80,
                   child: ListView(
@@ -174,7 +173,7 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                /// 👨‍⚕️ DOCTORS TITLE
+                /// 🔹 DOCTOR LIST TITLE
                 const Text(
                   "Our Doctors",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -182,7 +181,7 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                /// 👨‍⚕️ DOCTORS LIST
+                /// 🔹 DOCTORS LIST
                 StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('Doctors')
@@ -205,15 +204,18 @@ class UserHome extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final doctor =
                             doctors[index].data() as Map<String, dynamic>;
-
+                        double rating = doctor['rating'] is double
+                            ? doctor['rating']
+                            : double.tryParse(doctor['rating'].toString()) ??
+                                  0.0;
                         return Center(
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.9,
                             child: DoctorCard(
                               name: doctor['name'] ?? '',
-                              specialty: doctor['specialization'] ?? '',
-                              rating: doctor['rating'] ?? '',
+                              specialization: doctor['specialization'] ?? '',
                               hospital: doctor['hospital'] ?? "",
+                              rating: rating,
                               imageUrl:
                                   'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                             ),

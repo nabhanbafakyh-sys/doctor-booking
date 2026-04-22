@@ -26,9 +26,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => RoleViewModel()),
-        ChangeNotifierProvider(create: (_) => adminbottomVM()),
+        ChangeNotifierProvider(create: (_) => AdminBottomBarvm()),
         ChangeNotifierProvider(create: (_) => userbotomVM()),
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider(create: (_) => HomeViewModel()..fetchDoctors()),
         ChangeNotifierProvider(create: (_) => BookingVM()),
         ChangeNotifierProvider(create: (_) => AppointmentViewModel()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
