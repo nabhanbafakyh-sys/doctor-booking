@@ -127,6 +127,7 @@ class AdminHome extends StatelessWidget {
                                           await context
                                               .read<AdminHomeViewModel>()
                                               .deleteDoctor(doctor['id']);
+                                          if (!context.mounted) return;
                                           Navigator.pop(context);
                                           ScaffoldMessenger.of(
                                             context,

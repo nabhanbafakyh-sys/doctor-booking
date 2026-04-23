@@ -103,7 +103,8 @@ class Loginscren extends StatelessWidget {
                             throw Exception("User data not found");
                           }
                           final role = doc['role'];
-                          print("Logged in as: $role");
+                          debugPrint("Logged in as: $role");
+                          if (!context.mounted) return;
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,
@@ -120,7 +121,7 @@ class Loginscren extends StatelessWidget {
                             );
                           }
                         } catch (e) {
-                          print("Login error: $e");
+                          debugPrint("Login error: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Login failed: $e")),
                           );

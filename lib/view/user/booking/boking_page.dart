@@ -165,6 +165,7 @@ class BookingScreen extends StatelessWidget {
                   doctorName: doctorName,
                   specialty: specialty,
                 );
+                if (!context.mounted) return;
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text("Appointment Booked")));

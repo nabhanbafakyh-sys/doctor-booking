@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/appoinments/wigets/appoinment_card.dart';
+import 'package:room_rental/view/admin/appoinments/wigets/status_card.dart';
 import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
 
 class AdminDashboard extends StatelessWidget {
@@ -9,12 +11,10 @@ class AdminDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => AdminDashboardViewModel(),
-
       child: Consumer<AdminDashboardViewModel>(
         builder: (context, vm, child) {
           return Scaffold(
             backgroundColor: Colors.grey[100],
-
             appBar: AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
@@ -23,7 +23,6 @@ class AdminDashboard extends StatelessWidget {
                 style: TextStyle(color: Colors.black),
               ),
             ),
-
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -84,9 +83,7 @@ class AdminDashboard extends StatelessWidget {
                     itemCount: vm.appointments.length,
                     itemBuilder: (context, index) {
                       final a = vm.appointments[index];
-
                       bool confirmed = a['status'] == 'confirmed';
-
                       return appointmentCard(a, confirmed, context);
                     },
                   ),
@@ -95,93 +92,6 @@ class AdminDashboard extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  /// 🔹 SMALL CARD
-  Widget statCard(String count, String label, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          children: [
-            Text(
-              count,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            Text(label),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget appointmentCard(
-    Map<String, dynamic> a,
-    bool confirmed,
-    BuildContext context,
-  ) {
-    final vm = context.read<AdminDashboardViewModel>();
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// NAME + STATUS
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                a['userName'] ?? '',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                (a['status'] ?? '').toUpperCase(),
-                style: TextStyle(
-                  color: confirmed ? Colors.green : Colors.orange,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 6),
-          Text("Doctor: ${a['doctorName']}"),
-          Text("Time: ${a['time']}"),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => vm.cancel(a['id']),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade200,
-                  ),
-                  child: Text("Cancel"),
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => vm.approve(a['id']),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade400,
-                  ),
-                  child: Text("Approve"),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

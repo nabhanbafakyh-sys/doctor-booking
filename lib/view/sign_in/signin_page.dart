@@ -87,6 +87,13 @@ class _SigninPageState extends State<SigninPage> {
                       prefixicon: Icons.lock_outline_sharp,
                       controller: password,
                     ),
+                    SizedBox(height: 15),
+                    Customtextfield(
+                      label: 'Phone number',
+                      hintText: 'number',
+                      prefixicon: Icons.call,
+                      controller: phoneController,
+                    ),
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () async {
@@ -120,6 +127,7 @@ class _SigninPageState extends State<SigninPage> {
                                 'image': "",
                                 'createdAt': FieldValue.serverTimestamp(),
                               });
+                          if (!context.mounted) return;
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,
@@ -136,7 +144,7 @@ class _SigninPageState extends State<SigninPage> {
                             );
                           }
                         } catch (e) {
-                          print("Signup error: $e");
+                          debugPrint("Signup error: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("Signup failed: $e")),
                           );

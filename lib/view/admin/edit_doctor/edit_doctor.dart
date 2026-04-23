@@ -125,7 +125,7 @@ class _EditDoctorPageState extends State<EditDoctorPage> {
                         'rating': double.tryParse(ratingController.text) ?? 0.0,
                         'bio': bioController.text,
                       });
-
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 },
                 icon: Icon(Icons.save),

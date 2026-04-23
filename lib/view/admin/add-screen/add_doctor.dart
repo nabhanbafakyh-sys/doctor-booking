@@ -121,6 +121,7 @@ class AddDoctorPage extends StatelessWidget {
                     rating: ratingcontroller.text,
                     bio: '',
                   );
+                  if (!context.mounted) return;
                   Navigator.pop(context);
                 },
                 icon: Icon(Icons.person_add),

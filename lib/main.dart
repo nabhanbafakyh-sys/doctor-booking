@@ -6,7 +6,7 @@ import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
 import 'package:room_rental/view_model/admin/doctor_addVM.dart';
 import 'package:room_rental/view_model/auth/auth.dart';
-import 'package:room_rental/view_model/user/appoinment_VM.dart';
+import 'package:room_rental/view_model/user/appoinment_vm.dart';
 import 'package:room_rental/view_model/user/homeviewmodel.dart';
 import 'package:room_rental/view_model/user/mydoctors.dart';
 import 'package:room_rental/view_model/user/profile.dart';
@@ -30,12 +30,12 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => RoleViewModel()),
         ChangeNotifierProvider(create: (_) => AdminBottomBarvm()),
-        ChangeNotifierProvider(create: (_) => userbotomVM()),
+        ChangeNotifierProvider(create: (_) => UserBottomBarvm()),
         ChangeNotifierProvider(create: (_) => AdminHomeViewModel()),
         ChangeNotifierProvider(create: (_) => BookingVM()),
         ChangeNotifierProvider(create: (_) => AppointmentViewModel()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => profileVM()),
+        ChangeNotifierProvider(create: (_) => Profilevm()),
         ChangeNotifierProvider(create: (_) => DoctorViewModel()),
         ChangeNotifierProvider(create: (_) => UserHomeViewModel()),
         ChangeNotifierProvider(create: (_) => AdminDashboardViewModel()),

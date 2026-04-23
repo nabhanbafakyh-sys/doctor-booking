@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view/user/my_doctors/my_doctors.dart';
+import 'package:room_rental/view/user/profile/edit_profile.dart';
+import 'package:room_rental/view/user/profile/personel_info.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 import 'package:room_rental/view_model/user/profile.dart';
 import 'package:room_rental/view_model/user/user_bottom_bar.dart';
@@ -11,10 +13,7 @@ class UserProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.microtask(
-      () => Provider.of<profileVM>(context, listen: false).getUserName(),
-    );
-    final navVM = context.read<userbotomVM>();
+    final navVM = context.read<UserBottomBarvm>();
     return PopScope(
       canPop: navVM.selectedpage == 0,
       onPopInvokedWithResult: (didPop, result) {
@@ -31,7 +30,7 @@ class UserProfile extends StatelessWidget {
           elevation: 0,
           foregroundColor: Colors.black,
         ),
-        body: Consumer<profileVM>(
+        body: Consumer<Profilevm>(
           builder: (context, vm, child) {
             return SingleChildScrollView(
               child: Column(
@@ -54,7 +53,14 @@ class UserProfile extends StatelessWidget {
                       buildTile(
                         Icons.person,
                         "Personal Information",
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => PersonalInfoPage(),
+                            ),
+                          );
+                        },
                       ),
                       buildTile(
                         Icons.description,

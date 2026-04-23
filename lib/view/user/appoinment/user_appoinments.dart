@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/widgets/info.dart';
 import 'package:room_rental/widgets/tabs.dart';
-import 'package:room_rental/view_model/user/appoinment_VM.dart';
+import 'package:room_rental/view_model/user/appoinment_vm.dart';
 import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class UserAppointments extends StatelessWidget {
@@ -16,9 +16,9 @@ class UserAppointments extends StatelessWidget {
         if (vm.appointments.isEmpty && vm.isLoading) {
           vm.listenAppointments();
         }
-        final navVM = context.read<userbotomVM>();
+        final navVM = context.read<UserBottomBarvm>();
         return PopScope(
-          canPop: navVM.selectedpage == 0, // ✅ only allow exit on Home
+          canPop: navVM.selectedpage == 0,
           onPopInvokedWithResult: (didPop, result) {
             if (!didPop && navVM.selectedpage != 0) {
               navVM.changepage(0);

@@ -10,7 +10,7 @@ class UserBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navVM = context.watch<userbotomVM>();
+    final navVM = context.watch<UserBottomBarvm>();
 
     final screens = [UserHome(), UserAppointments(), UserProfile()];
 

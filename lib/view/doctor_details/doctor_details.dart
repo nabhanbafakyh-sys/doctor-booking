@@ -45,7 +45,7 @@ class DoctorDetailsPage extends StatelessWidget {
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (_, _, _) => Container(
                       height: 300,
                       color: Colors.grey.shade300,
                       child: const Icon(Icons.person, size: 80),
