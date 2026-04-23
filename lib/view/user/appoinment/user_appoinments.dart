@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view/user/appoinment/widgets/info.dart';
-import 'package:room_rental/view/user/appoinment/widgets/tabs.dart';
+import 'package:room_rental/widgets/info.dart';
+import 'package:room_rental/widgets/tabs.dart';
 import 'package:room_rental/view_model/user/appoinment_VM.dart';
 import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 

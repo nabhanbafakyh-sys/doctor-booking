@@ -1,18 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import 'package:room_rental/view/user/catogeries/cotogeryfilter.dart';
+import 'package:room_rental/view_model/user/homeviewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
 import 'package:room_rental/view/user/home/widgets/doctor_card.dart';
+import 'package:room_rental/view/user/catogeries/cotogeryfilter.dart';
 
 class UserHome extends StatelessWidget {
   const UserHome({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<UserHomeViewModel>();
     final userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (vm.doctors.isEmpty && userId != null) {
+      context.read<UserHomeViewModel>().fetchDoctors();
+      context.read<UserHomeViewModel>().fetchUser(userId);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -44,40 +50,16 @@ class UserHome extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// 🔹 USER NAME
-                StreamBuilder<DocumentSnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(userId)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData || !snapshot.data!.exists) {
-                      return const Text(
-                        "Hello, User",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 26,
-                        ),
-                      );
-                    }
-
-                    final data = snapshot.data!.data() as Map<String, dynamic>?;
-
-                    final name = data?['name'] ?? "User";
-
-                    return Text(
-                      "Hello, $name 👋",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 26,
-                      ),
-                    );
-                  },
+                Text(
+                  "Hello, ${vm.userName} 👋",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 26,
+                  ),
                 ),
 
-                const SizedBox(height: 5),
-
-                const Text(
+                SizedBox(height: 5),
+                Text(
                   'Find your doctor',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
@@ -128,35 +110,21 @@ class UserHome extends StatelessWidget {
                         },
                       ),
                       CategoryItem(
-                        icon: FontAwesomeIcons.heartPulse,
-                        label: 'Cardio',
-                        ontap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => CategoryDoctorsScreen(
-                                category: 'cardiologist',
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      CategoryItem(
-                        icon: FontAwesomeIcons.brain,
-                        label: 'Neuro',
+                        icon: FontAwesomeIcons.baby,
+                        label: 'pediatrics',
                         ontap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
-                                  CategoryDoctorsScreen(category: 'neurology'),
+                                  CategoryDoctorsScreen(category: 'pediatrics'),
                             ),
                           );
                         },
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.tooth,
-                        label: 'Dental',
+                        label: 'dental',
                         ontap: () {
                           Navigator.push(
                             context,
@@ -167,13 +135,52 @@ class UserHome extends StatelessWidget {
                           );
                         },
                       ),
+                      CategoryItem(
+                        icon: FontAwesomeIcons.brain,
+                        label: 'nuerology',
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CategoryDoctorsScreen(category: 'nuerology'),
+                            ),
+                          );
+                        },
+                      ),
+                      CategoryItem(
+                        icon: FontAwesomeIcons.heart,
+                        label: 'cardiology',
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CategoryDoctorsScreen(category: 'cardiology'),
+                            ),
+                          );
+                        },
+                      ),
+                      CategoryItem(
+                        icon: FontAwesomeIcons.stethoscope,
+                        label: 'medicine',
+                        ontap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  CategoryDoctorsScreen(category: 'medicine'),
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                /// 🔹 DOCTOR LIST TITLE
+                /// 🔹 DOCTORS LIST
                 const Text(
                   "Our Doctors",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
@@ -181,50 +188,29 @@ class UserHome extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                /// 🔹 DOCTORS LIST
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('Doctors')
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                vm.doctors.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: vm.doctors.length,
+                        itemBuilder: (context, index) {
+                          final doctor = vm.doctors[index];
 
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text("No doctors found"));
-                    }
-
-                    final doctors = snapshot.data!.docs;
-
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: doctors.length,
-                      itemBuilder: (context, index) {
-                        final doctor =
-                            doctors[index].data() as Map<String, dynamic>;
-                        double rating = doctor['rating'] is double
-                            ? doctor['rating']
-                            : double.tryParse(doctor['rating'].toString()) ??
-                                  0.0;
-                        return Center(
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            child: DoctorCard(
-                              name: doctor['name'] ?? '',
-                              specialization: doctor['specialization'] ?? '',
-                              hospital: doctor['hospital'] ?? "",
-                              rating: rating,
-                              imageUrl:
-                                  'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                          double rating = doctor['rating'] is double
+                              ? doctor['rating']
+                              : double.tryParse(doctor['rating'].toString()) ??
+                                    0.0;
+                          return DoctorCard(
+                            name: doctor['name'] ?? '',
+                            specialization: doctor['specialization'] ?? '',
+                            hospital: doctor['hospital'] ?? '',
+                            rating: rating,
+                            imageUrl:
+                                'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                          );
+                        },
+                      ),
               ],
             ),
           ),

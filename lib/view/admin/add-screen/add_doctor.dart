@@ -50,13 +50,12 @@ class AddDoctorPage extends StatelessWidget {
                   right: 0,
                   child: CircleAvatar(
                     radius: 14,
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.teal.shade300,
                     child: Icon(Icons.edit, size: 14, color: Colors.white),
                   ),
                 ),
               ],
             ),
-
             SizedBox(height: 10),
             Text(
               "Upload Professional Profile Photo",
@@ -83,7 +82,6 @@ class AddDoctorPage extends StatelessWidget {
               Icons.rate_review,
               controller: ratingcontroller,
             ),
-
             SizedBox(height: 20),
             Align(
               alignment: Alignment.centerLeft,
@@ -101,35 +99,6 @@ class AddDoctorPage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 15),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Weekend On Call",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 10),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.add),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
             buildTextField("Professional Bio", Icons.description, maxLines: 4),
             SizedBox(height: 25),
 
@@ -138,7 +107,7 @@ class AddDoctorPage extends StatelessWidget {
               height: 55,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.teal.shade300,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -154,8 +123,8 @@ class AddDoctorPage extends StatelessWidget {
                   );
                   Navigator.pop(context);
                 },
-                icon: const Icon(Icons.person_add),
-                label: const Text(
+                icon: Icon(Icons.person_add),
+                label: Text(
                   "Add Doctor to Registry",
                   style: TextStyle(fontSize: 16),
                 ),
@@ -208,7 +177,7 @@ class AddDoctorPage extends StatelessWidget {
               time,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.green,
+                color: Colors.teal.shade300,
               ),
             ),
           ],

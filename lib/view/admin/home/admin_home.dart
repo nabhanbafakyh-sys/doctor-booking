@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
-import 'package:room_rental/view/admin/widget/admin_doctorcard.dart';
+import 'package:room_rental/view/admin/home/widget/admin_doctorcard.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 
 class AdminHome extends StatelessWidget {
@@ -9,22 +9,21 @@ class AdminHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<HomeViewModel>();
+    final vm = context.watch<AdminHomeViewModel>();
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: Padding(
           padding: const EdgeInsets.all(3.0),
           child: Image.asset('assets/role.png', height: 50, width: 50),
         ),
-        title: const Text(
+        title: Text(
           "Vitality",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
         ),
-        actions: const [
+        actions: [
           Padding(
             padding: EdgeInsets.all(8.0),
             child: Icon(Icons.notifications_none),
@@ -36,29 +35,24 @@ class AdminHome extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(11.0),
           child: vm.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Clinical Oversight",
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
-                      const SizedBox(height: 8),
-
-                      const Text(
+                      SizedBox(height: 8),
+                      Text(
                         "Manage doctors and medical staff easily",
                         style: TextStyle(color: Colors.grey),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      /// 🔹 ADD DOCTOR BUTTON
+                      SizedBox(height: 20),
                       SizedBox(
                         height: 40,
                         width: 150,
@@ -77,7 +71,7 @@ class AdminHome extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add, size: 18),
@@ -87,32 +81,25 @@ class AdminHome extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      const Text(
+                      SizedBox(height: 20),
+                      Text(
                         "Doctors Lists",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
-                      const SizedBox(height: 10),
-
-                      /// 🔥 DOCTORS LIST (PROVIDER)
+                      SizedBox(height: 10),
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: vm.doctors.length,
                         itemBuilder: (context, index) {
                           final doctor = vm.doctors[index];
-
                           double rating = doctor['rating'] is double
                               ? doctor['rating']
                               : double.tryParse(doctor['rating'].toString()) ??
                                     0.0;
-
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: AdminDoctorCard(
@@ -138,20 +125,18 @@ class AdminHome extends StatelessWidget {
                                       TextButton(
                                         onPressed: () async {
                                           await context
-                                              .read<HomeViewModel>()
+                                              .read<AdminHomeViewModel>()
                                               .deleteDoctor(doctor['id']);
-
                                           Navigator.pop(context);
-
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
-                                            const SnackBar(
+                                            SnackBar(
                                               content: Text("Doctor deleted"),
                                             ),
                                           );
                                         },
-                                        child: const Text(
+                                        child: Text(
                                           "Delete",
                                           style: TextStyle(color: Colors.red),
                                         ),

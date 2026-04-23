@@ -42,20 +42,15 @@ class AdminDoctorCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          /// 🔹 TOP SECTION
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// IMAGE
               CircleAvatar(
                 radius: 35,
                 backgroundColor: Colors.blue.shade100,
-                child: const Icon(Icons.person, size: 40),
+                child: Icon(Icons.person, size: 40),
               ),
-
-              const SizedBox(width: 12),
-
-              /// DETAILS
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,26 +66,22 @@ class AdminDoctorCard extends StatelessWidget {
                       ),
                       child: Text(
                         specialization.toUpperCase(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.teal,
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 8),
-
+                    SizedBox(height: 8),
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    const SizedBox(height: 4),
-
+                    SizedBox(height: 4),
                     Text(
                       hospital,
                       style: TextStyle(color: Colors.grey.shade600),
@@ -98,46 +89,24 @@ class AdminDoctorCard extends StatelessWidget {
                   ],
                 ),
               ),
-
-              /// RIGHT SIDE (EDIT + RATING)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  /// ✏️ EDIT
-                  IconButton(
-                    onPressed: onEdit,
-                    icon: const Icon(Icons.edit, color: Colors.teal),
-                  ),
-
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 18),
-                      const SizedBox(width: 4),
-                      Text(
-                        rating.toString(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ],
+              Icon(Icons.star, color: Colors.orange, size: 18),
+              SizedBox(width: 4),
+              Text(
+                rating.toString(),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
-
-          const SizedBox(height: 16),
-
-          /// 🔹 BUTTONS
+          SizedBox(height: 16),
           Row(
             children: [
-              /// DELETE
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: onDelete,
-                  icon: const Icon(Icons.delete),
-                  label: const Text("Delete"),
+                  icon: Icon(Icons.delete, color: Colors.red.shade300),
+                  label: Text("Delete", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[100],
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -145,10 +114,7 @@ class AdminDoctorCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              const SizedBox(width: 12),
-
-              /// DETAILS
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
@@ -164,18 +130,16 @@ class AdminDoctorCard extends StatelessWidget {
                             'image': imageUrl,
                             'bio': "",
                           },
-
                           docId: docId,
                           isAdmin: true,
                         ),
                       ),
                     );
                   },
-                  icon: const Icon(Icons.list_alt),
-                  label: const Text("Details"),
+                  icon: Icon(Icons.list_alt, color: Colors.white),
+                  label: Text("Details", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.teal.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

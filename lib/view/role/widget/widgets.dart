@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view_model/role.dart';
+import 'package:room_rental/view_model/role/role.dart';
 
 Widget buildRoleCard(
   BuildContext context, {

@@ -17,7 +17,7 @@ class DoctorDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<HomeViewModel>();
+    final vm = context.watch<AdminHomeViewModel>();
 
     final doctorList = vm.doctors.where((d) => d['id'] == docId).toList();
 

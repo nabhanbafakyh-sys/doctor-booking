@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/login/login.dart';
 import 'package:room_rental/view/role/widget/widgets.dart';
-import 'package:room_rental/view_model/role.dart';
+import 'package:room_rental/view_model/role/role.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});

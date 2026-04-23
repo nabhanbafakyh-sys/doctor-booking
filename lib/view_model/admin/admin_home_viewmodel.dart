@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomeViewModel extends ChangeNotifier {
+class AdminHomeViewModel extends ChangeNotifier {
+  AdminHomeViewModel() {
+    fetchDoctors();
+  }
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<Map<String, dynamic>> doctors = [];

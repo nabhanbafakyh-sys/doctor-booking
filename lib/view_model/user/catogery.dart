@@ -1,30 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:room_rental/model/doctor.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DoctorVM extends ChangeNotifier {
-  List<DoctorModel> _allDoctors = [];
+class CategoryViewModel extends ChangeNotifier {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  List<dynamic> selectedCategory = [
-    "general",
-    "cardiologist",
-    "pediatrics",
-    "dental",
-    "nuerology",
-  ];
+  List<Map<String, dynamic>> doctors = [];
+  bool isLoading = true;
 
-  void setDoctors(List<DoctorModel> doctors) {
-    _allDoctors = doctors;
+  void fetchDoctorsByCategory(String category) {
+    isLoading = true;
     notifyListeners();
-  }
 
-  List<DoctorModel> get filteredDoctors {
-    return _allDoctors.where((doc) {
-      return doc.specialization.toLowerCase() == selectedCategory;
-    }).toList();
-  }
+    _firestore
+        .collection('Doctors')
+        .where('specialization', isEqualTo: category)
+        .snapshots()
+        .listen((snapshot) {
+          doctors = snapshot.docs.map((doc) {
+            return {'id': doc.id, ...doc.data()};
+          }).toList();
 
-  void selectCategory(String category) {
-    selectedCategory = category as List<dynamic>;
-    notifyListeners();
+          isLoading = false;
+          notifyListeners(); // 🔥 auto update UI
+        });
   }
 }

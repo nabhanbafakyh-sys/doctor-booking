@@ -12,7 +12,7 @@ class AdminBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final vm = context.watch<AdminBottomBarvm>();
 
-    final pages = [AdminHome(), AdminAppointmentsPage(), AdminProfile()];
+    final pages = [AdminHome(), AdminDashboard(), AdminProfile()];
 
     return Scaffold(
       backgroundColor: Colors.white,
