@@ -28,14 +28,13 @@ class AdminDashboard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  /// 🔍 SEARCH
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(25),
                     ),
-                    child: const TextField(
+                    child: TextField(
                       decoration: InputDecoration(
                         icon: Icon(Icons.search),
                         hintText: "Search...",
@@ -43,10 +42,7 @@ class AdminDashboard extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  /// 🔥 BIG CARD
+                  SizedBox(height: 20),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -57,14 +53,14 @@ class AdminDashboard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           "Total Bookings Today",
                           style: TextStyle(color: Colors.white70),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 8),
                         Text(
                           "${vm.totalToday}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 30,
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -73,24 +69,18 @@ class AdminDashboard extends StatelessWidget {
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 15),
-
-                  /// 🔹 SMALL STATS
+                  SizedBox(height: 15),
                   Row(
                     children: [
                       statCard("${vm.pending}", "Pending", Colors.orange),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10),
                       statCard("${vm.cancelled}", "Cancelled", Colors.red),
                     ],
                   ),
-
-                  const SizedBox(height: 20),
-
-                  /// 🔹 LIST
+                  SizedBox(height: 20),
                   ListView.builder(
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: NeverScrollableScrollPhysics(),
                     itemCount: vm.appointments.length,
                     itemBuilder: (context, index) {
                       final a = vm.appointments[index];
@@ -116,7 +106,7 @@ class AdminDashboard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
@@ -131,7 +121,6 @@ class AdminDashboard extends StatelessWidget {
     );
   }
 
-  /// 🔥 APPOINTMENT CARD
   Widget appointmentCard(
     Map<String, dynamic> a,
     bool confirmed,
@@ -145,9 +134,6 @@ class AdminDashboard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: confirmed ? Colors.green : Colors.grey.shade300,
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +144,7 @@ class AdminDashboard extends StatelessWidget {
             children: [
               Text(
                 a['userName'] ?? '',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
                 (a['status'] ?? '').toUpperCase(),
@@ -168,14 +154,10 @@ class AdminDashboard extends StatelessWidget {
               ),
             ],
           ),
-
-          const SizedBox(height: 6),
-
+          SizedBox(height: 6),
           Text("Doctor: ${a['doctorName']}"),
           Text("Time: ${a['time']}"),
-
-          const SizedBox(height: 10),
-
+          SizedBox(height: 10),
           Row(
             children: [
               Expanded(
@@ -184,17 +166,17 @@ class AdminDashboard extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red.shade200,
                   ),
-                  child: const Text("Cancel"),
+                  child: Text("Cancel"),
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => vm.approve(a['id']),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Colors.teal.shade400,
                   ),
-                  child: const Text("Approve"),
+                  child: Text("Approve"),
                 ),
               ),
             ],
