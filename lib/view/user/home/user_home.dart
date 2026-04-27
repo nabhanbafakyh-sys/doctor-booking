@@ -15,11 +15,6 @@ class UserHome extends StatelessWidget {
     final vm = context.watch<UserHomeViewModel>();
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
-    if (vm.doctors.isEmpty && userId != null) {
-      context.read<UserHomeViewModel>().fetchDoctors();
-      context.read<UserHomeViewModel>().fetchUser(userId);
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -51,7 +46,7 @@ class UserHome extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello, ${vm.userName} 👋",
+                  "Hello, ${vm.userName} ",
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 26,
@@ -65,8 +60,6 @@ class UserHome extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-
-                /// 🔹 SEARCH
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
@@ -197,17 +190,8 @@ class UserHome extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final doctor = vm.doctors[index];
 
-                          double rating = doctor['rating'] is double
-                              ? doctor['rating']
-                              : double.tryParse(doctor['rating'].toString()) ??
-                                    0.0;
                           return DoctorCard(
-                            name: doctor['name'] ?? '',
-                            specialization: doctor['specialization'] ?? '',
-                            hospital: doctor['hospital'] ?? '',
-                            rating: rating,
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                            doctor: doctor, // ✅ pass full model
                           );
                         },
                       ),

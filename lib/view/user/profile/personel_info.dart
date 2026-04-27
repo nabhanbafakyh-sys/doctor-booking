@@ -17,82 +17,83 @@ class PersonalInfoPage extends StatelessWidget {
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      body: Consumer<Profilevm>(
+      body: Consumer<ProfileVM>(
         builder: (context, vm, _) {
+          if (vm.isLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
           return Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const CircleAvatar(
+                          radius: 35,
+                          backgroundImage: NetworkImage(
+                            "https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg",
+                          ),
+                        ),
+                        SizedBox(height: 12),
+
+                        Text(
+                          vm.name.isNotEmpty ? vm.name : "Guest",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        SizedBox(height: 20),
+                        Divider(),
+
+                        infoTile(Icons.person, "Name", vm.name),
+                        infoTile(Icons.phone, "Phone", vm.phone),
+                        infoTile(Icons.email, "Email", vm.email),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      const CircleAvatar(
-                        radius: 35,
-                        backgroundImage: NetworkImage(
-                          "https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg",
+                  SizedBox(height: 30),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      const SizedBox(height: 12),
-
-                      Text(
-                        vm.name.isEmpty ? "User Name" : vm.name,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      icon: Icon(Icons.edit, color: Colors.white),
+                      label: Text(
+                        "Edit Profile",
+                        style: TextStyle(color: Colors.white),
                       ),
-
-                      const SizedBox(height: 20),
-                      const Divider(),
-
-                      infoTile(Icons.person, "Name", vm.name),
-                      infoTile(Icons.phone, "Phone", vm.phone),
-                      infoTile(Icons.email, "Email", vm.email),
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => EditProfilePage()),
+                        );
+                        context.read<ProfileVM>().loadUser();
+                      },
                     ),
-                    icon: const Icon(Icons.edit, color: Colors.white),
-                    label: const Text(
-                      "Edit Profile",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => EditProfilePage()),
-                      );
-
-                      // 🔁 Refresh after edit
-                      context.read<Profilevm>().loadUser();
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view/user/my_doctors/my_doctors.dart';
-import 'package:room_rental/view/user/profile/edit_profile.dart';
+
 import 'package:room_rental/view/user/profile/personel_info.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 import 'package:room_rental/view_model/user/profile.dart';
@@ -30,7 +30,7 @@ class UserProfile extends StatelessWidget {
           elevation: 0,
           foregroundColor: Colors.black,
         ),
-        body: Consumer<Profilevm>(
+        body: Consumer<ProfileVM>(
           builder: (context, vm, child) {
             return SingleChildScrollView(
               child: Column(
@@ -57,7 +57,10 @@ class UserProfile extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => PersonalInfoPage(),
+                              builder: (_) => ChangeNotifierProvider(
+                                create: (_) => ProfileVM(),
+                                child: PersonalInfoPage(),
+                              ),
                             ),
                           );
                         },

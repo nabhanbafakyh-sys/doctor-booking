@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -7,11 +9,12 @@ class CategoryViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> doctors = [];
   bool isLoading = true;
 
-  void fetchDoctorsByCategory(String category) {
-    isLoading = true;
-    notifyListeners();
+  StreamSubscription? _subscription;
 
-    _firestore
+  void fetchDoctorsByCategory(String category) {
+    _subscription?.cancel();
+
+    _subscription = _firestore
         .collection('Doctors')
         .where('specialization', isEqualTo: category)
         .snapshots()
@@ -21,7 +24,7 @@ class CategoryViewModel extends ChangeNotifier {
           }).toList();
 
           isLoading = false;
-          notifyListeners(); // 🔥 auto update UI
+          notifyListeners();
         });
   }
 }

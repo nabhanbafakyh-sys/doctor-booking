@@ -18,39 +18,59 @@ class BookingVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> bookAppointment({
+  Future<String> bookAppointment({
+    required String doctorId,
     required String doctorName,
     required String specialty,
+    required String hospital,
+    required String image,
   }) async {
     try {
-      if (selecteddate == null || selectedtime == null) return;
+      if (selecteddate == null || selectedtime == null) {
+        return "Please select date & time";
+      }
 
       final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return "User not logged in";
 
-      if (user == null) {
-        throw Exception("User not logged in");
-      }
-      final userDoc = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user.uid)
-          .get();
+      final userDoc = await booking.collection('users').doc(user.uid).get();
+      final userName = userDoc.data()?['name'] ?? "User";
 
-      final userData = userDoc.data();
-      final userName = userData?['name'] ?? "User";
-      await booking.collection('appointments').add({
-        'userId': user.uid,
-        'doctorName': doctorName,
-        'specialization': specialty,
-        'userName': userName,
-        'date': selecteddate!.toIso8601String(),
-        'time': selectedtime,
-        'status': "confirmed",
-        'createdAt': Timestamp.now(),
+      final dateStr = selecteddate!.toIso8601String();
+
+      /// 🔥 SAFE TRANSACTION (prevents double booking)
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final query = await booking
+            .collection('appointments')
+            .where('doctorId', isEqualTo: doctorId)
+            .where('date', isEqualTo: dateStr)
+            .where('time', isEqualTo: selectedtime)
+            .get();
+
+        if (query.docs.isNotEmpty) {
+          throw Exception("Slot already booked");
+        }
+
+        final newDoc = booking.collection('appointments').doc();
+
+        transaction.set(newDoc, {
+          'userId': user.uid,
+          'doctorId': doctorId,
+          'doctorName': doctorName,
+          'specialization': specialty,
+          'hospital': hospital,
+          'image': image,
+          'userName': userName,
+          'date': dateStr,
+          'time': selectedtime,
+          'status': "confirmed",
+          'createdAt': Timestamp.now(),
+        });
       });
 
-      debugPrint("Appointment booked successfully");
+      return "success";
     } catch (e) {
-      debugPrint("Booking error: $e");
+      return e.toString();
     }
   }
 }

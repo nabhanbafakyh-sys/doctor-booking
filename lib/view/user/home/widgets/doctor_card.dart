@@ -1,22 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:room_rental/model/doctor.dart';
 import 'package:room_rental/view/doctor_details/doctor_details.dart';
 import 'package:room_rental/view/user/booking/boking_page.dart';
 
 class DoctorCard extends StatelessWidget {
-  final String name;
-  final String specialization;
-  final String hospital;
-  final double rating;
-  final String imageUrl;
-
-  const DoctorCard({
-    super.key,
-    required this.name,
-    required this.specialization,
-    required this.hospital,
-    required this.rating,
-    required this.imageUrl,
-  });
+  final DoctorModel doctor;
+  const DoctorCard({super.key, required this.doctor});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +48,7 @@ class DoctorCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        specialization.toUpperCase(),
+                        doctor.specialization.toUpperCase(),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -69,7 +58,7 @@ class DoctorCard extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      name,
+                      doctor.name,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -77,7 +66,7 @@ class DoctorCard extends StatelessWidget {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      hospital,
+                      doctor.hospital,
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ],
@@ -88,7 +77,7 @@ class DoctorCard extends StatelessWidget {
                   Icon(Icons.star, color: Colors.orange, size: 20),
                   SizedBox(width: 4),
                   Text(
-                    rating.toString(),
+                    doctor.rating.toString(),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -105,10 +94,11 @@ class DoctorCard extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => BookingScreen(
-                          doctorName: name,
-                          hospital: hospital,
-                          specialty: specialization,
-                          imageUrl: imageUrl,
+                          doctorid: doctor.id,
+                          doctorName: doctor.name,
+                          hospital: doctor.hospital,
+                          specialty: doctor.specialization,
+                          imageUrl: doctor.image,
                         ),
                       ),
                     );
@@ -134,16 +124,15 @@ class DoctorCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DoctorDetailsPage(
-                          data: {
-                            'name': name,
-                            'specialization': specialization,
-                            'hospital': hospital,
-                            'rating': rating,
-                            'image': imageUrl,
-                            'bio': "",
+                        builder: (_) => DoctorDetailsPage(
+                          doctor: {
+                            'name': doctor.name,
+                            'specialization': doctor.specialization,
+                            'hospital': doctor.hospital,
+                            'image': doctor.image,
+                            'rating': doctor.rating,
                           },
-                          docId: '',
+                          docId: doctor.id,
                         ),
                       ),
                     );

@@ -9,6 +9,7 @@ class BookingScreen extends StatelessWidget {
   final String hospital;
   final String specialty;
   final String imageUrl;
+  final String doctorid;
 
   const BookingScreen({
     super.key,
@@ -16,6 +17,7 @@ class BookingScreen extends StatelessWidget {
     required this.hospital,
     required this.specialty,
     required this.imageUrl,
+    required this.doctorid,
   });
 
   @override
@@ -161,15 +163,23 @@ class BookingScreen extends StatelessWidget {
             color: Colors.white,
             child: ElevatedButton(
               onPressed: () async {
-                await vm.bookAppointment(
+                final result = await vm.bookAppointment(
+                  doctorId: doctorid,
                   doctorName: doctorName,
                   specialty: specialty,
+                  hospital: hospital,
+                  image: imageUrl,
                 );
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("Appointment Booked")));
-                Navigator.pop(context);
+
+                if (result == "success") {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Appointment booked ")),
+                  );
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(result)));
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal.shade300,

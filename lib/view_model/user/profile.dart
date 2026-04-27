@@ -1,58 +1,112 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
-class Profilevm extends ChangeNotifier {
+class ProfileVM extends ChangeNotifier {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   String name = "";
-  String phone = "";
   String email = "";
+  String phone = "";
+  String role = "";
 
   bool isLoading = true;
 
-  final user = FirebaseAuth.instance.currentUser;
+  StreamSubscription? _authSub;
 
-  Profilevm() {
-    loadUser(); // ✅ auto load when provider is created
+  ProfileVM() {
+    _listenToAuth();
+  }
+
+  void _listenToAuth() {
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        loadUser();
+      } else {
+        _clearData();
+      }
+    });
   }
 
   Future<void> loadUser() async {
-    if (user == null) return;
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    isLoading = true;
-    notifyListeners();
+      final user = FirebaseAuth.instance.currentUser;
 
-    final doc = await FirebaseFirestore.instance
-        .collection('users') // ✅ make sure lowercase
-        .doc(user!.uid)
-        .get();
+      if (user == null) {
+        _clearData();
+        return;
+      }
 
-    if (doc.exists) {
-      name = doc['name'] ?? "";
-      phone = doc['phone'] ?? "";
-      email = doc['email'] ?? "";
+      final doc = await _db.collection('Users').doc(user.uid).get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        name = data['name'] ?? "";
+        email = data['email'] ?? user.email ?? "";
+        phone = data['phone'] ?? "";
+        role = data['role'] ?? "";
+      }
+
+      isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Load error: $e");
+      isLoading = false;
+      notifyListeners();
     }
+  }
 
+  /// 🔥 Update profile
+  Future<bool> updateProfile({
+    required String newName,
+    required String newPhone,
+    required String newEmail,
+  }) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return false;
+
+      // Update email (may require re-login)
+      if (user.email != newEmail) {
+        await user.updateEmail(newEmail);
+      }
+
+      await _db.collection('Users').doc(user.uid).update({
+        'name': newName,
+        'phone': newPhone,
+        'email': newEmail,
+      });
+
+      // Update local state instantly
+      name = newName;
+      phone = newPhone;
+      email = newEmail;
+
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint("Update error: $e");
+      return false;
+    }
+  }
+
+  /// 🔥 Clear data when user logs out
+  void _clearData() {
+    name = "";
+    email = "";
+    phone = "";
+    role = "";
     isLoading = false;
     notifyListeners();
   }
 
-  Future<void> updateProfile({
-    required String name,
-    required String phone,
-    required String email,
-  }) async {
-    if (user == null) return;
-
-    await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
-      'name': name,
-      'phone': phone,
-      'email': email,
-    }, SetOptions(merge: true));
-
-    this.name = name;
-    this.phone = phone;
-    this.email = email;
-
-    notifyListeners();
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 }

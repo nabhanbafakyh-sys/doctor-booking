@@ -1,38 +1,30 @@
 class DoctorModel {
-  String id;
-  String name;
-  String specialization;
-  String image;
-  double rating;
-  String hospital;
+  final String id;
+  final String name;
+  final String specialization;
+  final String hospital;
+  final double rating;
+  final String image;
 
   DoctorModel({
-    this.id = '',
+    required this.id,
     required this.name,
     required this.specialization,
-    required this.image,
-    required this.rating,
     required this.hospital,
+    required this.rating,
+    required this.image,
   });
 
-  factory DoctorModel.fromJson(Map<String, dynamic> json, String id) {
+  factory DoctorModel.fromFirestore(Map<String, dynamic> data, String id) {
     return DoctorModel(
       id: id,
-      name: json['name'],
-      specialization: json['specialization'],
-      image: json['image'],
-      rating: (json['rating'] as num).toDouble(),
-      hospital: json['hospital'],
+      name: data['name'] ?? '',
+      specialization: data['specialization'] ?? '',
+      hospital: data['hospital'] ?? '',
+      rating: data['rating'] is double
+          ? data['rating']
+          : double.tryParse(data['rating'].toString()) ?? 0.0,
+      image: data['image'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'specialization': specialization,
-      'image': image,
-      'rating': rating,
-      'hospital': hospital,
-    };
   }
 }

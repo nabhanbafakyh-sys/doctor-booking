@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BookingVM()),
         ChangeNotifierProvider(create: (_) => AppointmentViewModel()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
-        ChangeNotifierProvider(create: (_) => Profilevm()),
+        ChangeNotifierProvider(create: (_) => ProfileVM()),
         ChangeNotifierProvider(create: (_) => DoctorViewModel()),
         ChangeNotifierProvider(create: (_) => UserHomeViewModel()),
         ChangeNotifierProvider(create: (_) => AdminDashboardViewModel()),
@@ -43,20 +43,6 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        // home: StreamBuilder(
-        //   stream: FirebaseAuth.instance.authStateChanges(),
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       return Scaffold(body: Center(child: CircularProgressIndicator()));
-        //     }
-
-        //     if (snapshot.hasData) {
-        //       return UserBottomNav();
-        //     }
-
-        //     return Loginscren();
-        //   },
-        // ),
         home: RoleSelectionScreen(),
       ),
     );

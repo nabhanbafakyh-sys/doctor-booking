@@ -8,24 +8,20 @@ class DoctorDetailsPage extends StatelessWidget {
   final String docId;
   final bool isAdmin;
 
+  final Map<String, dynamic> doctor;
+
   const DoctorDetailsPage({
     super.key,
-    required this.docId,
+    required this.doctor,
     this.isAdmin = false,
-    required Map<String, Object> data,
+    required this.docId,
   });
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<AdminHomeViewModel>();
 
-    final doctorList = vm.doctors.where((d) => d['id'] == docId).toList();
-
-    if (doctorList.isEmpty) {
-      return const Scaffold(body: Center(child: Text("Doctor not found")));
-    }
-
-    final doctor = doctorList[0];
+    final doctor = this.doctor;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -74,7 +70,7 @@ class DoctorDetailsPage extends StatelessWidget {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: Colors.teal.shade300,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Column(
@@ -87,7 +83,7 @@ class DoctorDetailsPage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 5),
+                  SizedBox(height: 5),
                   Text(
                     doctor['specialization'] ?? '',
                     style: TextStyle(color: Colors.grey[600]),

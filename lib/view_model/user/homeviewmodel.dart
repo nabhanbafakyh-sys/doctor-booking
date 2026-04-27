@@ -1,31 +1,68 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:room_rental/model/doctor.dart';
 
 class UserHomeViewModel extends ChangeNotifier {
-  UserHomeViewModel() {
-    fetchDoctors();
-  }
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  List<Map<String, dynamic>> doctors = [];
+  List<DoctorModel> doctors = [];
   String userName = "User";
+  bool isLoading = true;
 
-  void fetchDoctors() {
+  StreamSubscription? _doctorSub;
+  StreamSubscription? _userSub;
+  StreamSubscription? _authSub;
+
+  UserHomeViewModel() {
+    _listenToAuth();
+    fetchdoctors();
+  }
+
+  /// 🔥 Listen to login/logout
+  void _listenToAuth() {
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _userSub?.cancel();
+
+      /// 🔥 reset user data
+      userName = "User";
+      notifyListeners();
+
+      if (user != null) {
+        listenUser(user.uid);
+      }
+    });
+  }
+
+  void fetchdoctors() {
     _firestore.collection('Doctors').snapshots().listen((snapshot) {
       doctors = snapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
+        return DoctorModel.fromFirestore(doc.data(), doc.id);
       }).toList();
 
       notifyListeners();
     });
   }
 
-  void fetchUser(String userId) {
-    _firestore.collection('Users').doc(userId).snapshots().listen((doc) {
+  void listenUser(String userId) {
+    _userSub = _firestore.collection('Users').doc(userId).snapshots().listen((
+      doc,
+    ) {
       if (doc.exists) {
         userName = doc['name'] ?? "User";
-        notifyListeners();
+      } else {
+        userName = "User";
       }
+      notifyListeners();
     });
+  }
+
+  @override
+  void dispose() {
+    _doctorSub?.cancel();
+    _userSub?.cancel();
+    _authSub?.cancel();
+    super.dispose();
   }
 }

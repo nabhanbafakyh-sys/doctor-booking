@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,20 +10,53 @@ class AppointmentViewModel extends ChangeNotifier {
   bool isLoading = true;
   bool showUpcoming = true;
 
-  void listenAppointments() {
-    debugPrint("LISTENER STARTED");
+  StreamSubscription? _appointmentSub;
+  StreamSubscription? _authSub;
 
-    _db.collection('appointments').snapshots().listen((snapshot) {
-      debugPrint("DATA COUNT: ${snapshot.docs.length}");
+  AppointmentViewModel() {
+    _listenToAuth();
+  }
 
-      appointments = snapshot.docs.map((doc) => doc.data()).toList();
-      appointments.sort(
-        (a, b) => a['date'].toString().compareTo(b['date'].toString()),
-      );
+  void _listenToAuth() {
+    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
+      _appointmentSub?.cancel();
 
-      isLoading = false;
+      appointments = [];
+      isLoading = true;
       notifyListeners();
+
+      if (user != null) {
+        Appointments(user.uid); // ✅ fixed
+      } else {
+        isLoading = false;
+        notifyListeners();
+      }
     });
+  }
+
+  // Listen to appointments of current user
+  void Appointments(String userId) {
+    isLoading = true;
+    notifyListeners();
+
+    _appointmentSub = _db
+        .collection('appointments')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .listen((snapshot) {
+          appointments = snapshot.docs.map((doc) {
+            return {'id': doc.id, ...doc.data()};
+          }).toList();
+
+          appointments.sort((a, b) {
+            final dateA = DateTime.parse(a['date']);
+            final dateB = DateTime.parse(b['date']);
+            return dateA.compareTo(dateB);
+          });
+
+          isLoading = false;
+          notifyListeners();
+        });
   }
 
   void toggleTab(bool upcoming) {
@@ -31,23 +66,30 @@ class AppointmentViewModel extends ChangeNotifier {
 
   List<Map<String, dynamic>> get filteredAppointments {
     final now = DateTime.now();
+
     return appointments.where((appt) {
       try {
         final rawDate = appt['date'];
         if (rawDate == null) return false;
-        final date = DateTime.parse(rawDate.toString().split(" ")[0]);
-        final today = DateTime(now.year, now.month, now.day);
-        final apptDate = DateTime(date.year, date.month, date.day);
+
+        final apptDate = DateTime.parse(rawDate);
 
         if (showUpcoming) {
-          return apptDate.isAfter(today) || apptDate == today;
+          return !apptDate.isBefore(now);
         } else {
-          return apptDate.isBefore(today);
+          return apptDate.isBefore(now);
         }
       } catch (e) {
         debugPrint("Date error: $e");
         return false;
       }
     }).toList();
+  }
+
+  @override
+  void dispose() {
+    _appointmentSub?.cancel();
+    _authSub?.cancel();
+    super.dispose();
   }
 }

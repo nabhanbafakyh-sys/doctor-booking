@@ -13,9 +13,7 @@ class UserAppointments extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AppointmentViewModel>(
       builder: (context, vm, child) {
-        if (vm.appointments.isEmpty && vm.isLoading) {
-          vm.listenAppointments();
-        }
+        if (vm.appointments.isEmpty && vm.isLoading) ;
         final navVM = context.read<UserBottomBarvm>();
         return PopScope(
           canPop: navVM.selectedpage == 0,

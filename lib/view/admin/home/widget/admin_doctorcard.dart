@@ -122,16 +122,9 @@ class AdminDoctorCard extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (_) => DoctorDetailsPage(
-                          data: {
-                            'name': name,
-                            'specialization': specialization,
-                            'hospital': hospital,
-                            'rating': rating,
-                            'image': imageUrl,
-                            'bio': "",
-                          },
                           docId: docId,
                           isAdmin: true,
+                          doctor: {},
                         ),
                       ),
                     );
