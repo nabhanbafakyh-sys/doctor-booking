@@ -81,43 +81,6 @@ class AdminHome extends StatelessWidget {
                               rating: rating,
                               imageUrl: doctor['image'] ?? '',
                               docId: doctor['id'],
-                              onDelete: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: Text("Delete Doctor"),
-                                    content: Text(
-                                      "Are you sure you want to delete?",
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text("Cancel"),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async {
-                                          await context
-                                              .read<AdminHomeViewModel>()
-                                              .deleteDoctor(doctor['id']);
-                                          if (!context.mounted) return;
-                                          Navigator.pop(context);
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text("Doctor deleted"),
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          "Delete",
-                                          style: TextStyle(color: Colors.red),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
                             ),
                           );
                         },

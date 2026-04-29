@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
 import 'package:room_rental/view/admin/appoinment_history/history.dart';
-import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view/admin/doctors_list/doctors_list.dart';
 import 'package:room_rental/view_model/auth/auth.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 
@@ -51,7 +51,18 @@ class AdminProfile extends StatelessWidget {
                     );
                   },
                 ),
-                buildTile(Icons.people, "Manage Doctors", onTap: () {}),
+                buildTile(
+                  Icons.people,
+                  "Manage Doctors",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminDoctorsScreen(),
+                      ),
+                    );
+                  },
+                ),
                 buildTile(
                   Icons.add,
                   "Add Doctor",

@@ -29,7 +29,6 @@ class DoctorDetailsPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            /// 🔹 IMAGE + BACK BUTTON
             Stack(
               children: [
                 ClipRRect(
@@ -55,17 +54,14 @@ class DoctorDetailsPage extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 NAME + SPECIALIZATION
+            SizedBox(height: 20),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(16),
@@ -78,10 +74,7 @@ class DoctorDetailsPage extends StatelessWidget {
                 children: [
                   Text(
                     doctor['name'] ?? '',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 5),
                   Text(
@@ -91,10 +84,7 @@ class DoctorDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 INFO CARDS
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -102,10 +92,7 @@ class DoctorDetailsPage extends StatelessWidget {
                 infoCard("Patients", "500+"),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            /// 🔹 RATING
+            SizedBox(height: 20),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(14),
@@ -118,9 +105,9 @@ class DoctorDetailsPage extends StatelessWidget {
                 children: [
                   Text(
                     "${doctor['rating'] ?? '0'}/5.0",
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.white),
                   ),
-                  const Row(
+                  Row(
                     children: [
                       Icon(Icons.star, color: Colors.white),
                       SizedBox(width: 5),
@@ -130,10 +117,8 @@ class DoctorDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             sectionTitle("About Specialist"),
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Container(
@@ -148,12 +133,10 @@ class DoctorDetailsPage extends StatelessWidget {
                 ),
               ),
             ),
-
-            const SizedBox(height: 30),
+            SizedBox(height: 30),
           ],
         ),
       ),
-
       bottomNavigationBar: isAdmin
           ? Padding(
               padding: const EdgeInsets.all(16),
@@ -167,8 +150,8 @@ class DoctorDetailsPage extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.edit),
-                label: const Text("Edit Doctor"),
+                icon: Icon(Icons.edit),
+                label: Text("Edit Doctor"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
                   foregroundColor: Colors.white,

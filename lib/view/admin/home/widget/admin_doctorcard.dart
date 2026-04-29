@@ -9,7 +9,6 @@ class AdminDoctorCard extends StatelessWidget {
   final String imageUrl;
   final String docId;
 
-  final VoidCallback? onDelete;
   final VoidCallback? onEdit;
 
   const AdminDoctorCard({
@@ -20,7 +19,6 @@ class AdminDoctorCard extends StatelessWidget {
     required this.rating,
     required this.imageUrl,
     required this.docId,
-    this.onDelete,
     this.onEdit,
   });
 
@@ -102,21 +100,6 @@ class AdminDoctorCard extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: onDelete,
-                  icon: Icon(Icons.delete, color: Colors.red.shade800),
-                  label: Text("Delete", style: TextStyle(color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade700,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -129,8 +112,11 @@ class AdminDoctorCard extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: Icon(Icons.list_alt, color: Colors.white),
-                  label: Text("Details", style: TextStyle(color: Colors.white)),
+                  icon: const Icon(Icons.list_alt, color: Colors.white),
+                  label: const Text(
+                    "Details",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal.shade300,
                     padding: const EdgeInsets.symmetric(vertical: 14),
