@@ -16,7 +16,7 @@ class AppointmentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime parsedDate;
     try {
-      parsedDate = DateTime.parse(appt['date'].toString().split(" ")[0]);
+      parsedDate = DateTime.parse(appt['date']);
     } catch (e) {
       parsedDate = DateTime.now();
     }

@@ -35,7 +35,8 @@ class BookingVM extends ChangeNotifier {
 
       final userDoc = await booking.collection('users').doc(user.uid).get();
       final userName = userDoc.data()?['name'] ?? "User";
-
+      final userData = userDoc.data();
+      final userPhone = userData?['phone'] ?? "";
       final dateStr = selecteddate!.toIso8601String();
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
@@ -59,7 +60,8 @@ class BookingVM extends ChangeNotifier {
           'specialization': specialty,
           'hospital': hospital,
           'image': image,
-          'username': userName,
+          'userName': userName,
+          'userPhone': userPhone,
           'date': dateStr,
           'time': selectedtime,
           'status': "pending",

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
 import 'package:room_rental/view/admin/home/widget/admin_doctorcard.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 

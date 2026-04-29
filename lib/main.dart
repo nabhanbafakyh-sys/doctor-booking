@@ -7,7 +7,6 @@ import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
 import 'package:room_rental/view_model/admin/doctor_addVM.dart';
 import 'package:room_rental/view_model/auth/auth.dart';
 import 'package:room_rental/view_model/user/appoinment_vm.dart';
-import 'package:room_rental/view_model/user/catogery.dart';
 import 'package:room_rental/view_model/user/homeviewmodel.dart';
 import 'package:room_rental/view_model/user/mydoctors.dart';
 import 'package:room_rental/view_model/user/profile.dart';
