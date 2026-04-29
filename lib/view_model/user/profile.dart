@@ -18,6 +18,14 @@ class ProfileVM extends ChangeNotifier {
   ProfileVM() {
     _listenToAuth();
   }
+  void clear() {
+    name = "";
+    email = "";
+    phone = "";
+    role = "";
+    isLoading = true;
+    notifyListeners();
+  }
 
   void _listenToAuth() {
     _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {

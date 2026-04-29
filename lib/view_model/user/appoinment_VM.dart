@@ -26,7 +26,7 @@ class AppointmentViewModel extends ChangeNotifier {
       notifyListeners();
 
       if (user != null) {
-        Appointments(user.uid); // ✅ fixed
+        Appointments(user.uid);
       } else {
         isLoading = false;
         notifyListeners();
@@ -66,18 +66,20 @@ class AppointmentViewModel extends ChangeNotifier {
 
   List<Map<String, dynamic>> get filteredAppointments {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
 
     return appointments.where((appt) {
       try {
         final rawDate = appt['date'];
         if (rawDate == null) return false;
 
-        final apptDate = DateTime.parse(rawDate);
+        final parsed = DateTime.parse(rawDate);
+        final apptDate = DateTime(parsed.year, parsed.month, parsed.day);
 
         if (showUpcoming) {
-          return !apptDate.isBefore(now);
+          return apptDate.isAtSameMomentAs(today) || apptDate.isAfter(today);
         } else {
-          return apptDate.isBefore(now);
+          return apptDate.isBefore(today);
         }
       } catch (e) {
         debugPrint("Date error: $e");

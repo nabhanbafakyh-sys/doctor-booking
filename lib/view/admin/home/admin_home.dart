@@ -52,35 +52,7 @@ class AdminHome extends StatelessWidget {
                         "Manage doctors and medical staff easily",
                         style: TextStyle(color: Colors.grey),
                       ),
-                      SizedBox(height: 20),
-                      SizedBox(
-                        height: 40,
-                        width: 150,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal[300],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AddDoctorPage(),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add, size: 18),
-                              SizedBox(width: 6),
-                              Text('Add Doctor'),
-                            ],
-                          ),
-                        ),
-                      ),
+
                       SizedBox(height: 20),
                       Text(
                         "Doctors Lists",

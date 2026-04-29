@@ -103,10 +103,10 @@ class AdminDoctorCard extends StatelessWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: onDelete,
-                  icon: Icon(Icons.delete, color: Colors.red.shade300),
+                  icon: Icon(Icons.delete, color: Colors.red.shade800),
                   label: Text("Delete", style: TextStyle(color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[100],
+                    backgroundColor: Colors.red.shade700,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

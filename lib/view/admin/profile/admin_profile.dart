@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
+import 'package:room_rental/view/admin/appoinment_history/history.dart';
 import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view_model/auth/auth.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 
 class AdminProfile extends StatelessWidget {
@@ -8,26 +12,85 @@ class AdminProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profile')),
-      body: Column(
-        children: [
-          buildSectionCard(
-            children: [
-              buildTile(
-                Icons.logout,
-                'Log out',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RoleSelectionScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('Admin Panel'),
+        automaticallyImplyLeading: false,
+      ),
+      backgroundColor: Colors.grey[100],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 10),
+
+            buildSectionCard(
+              children: [buildTile(Icons.person, "Admin Info", onTap: () {})],
+            ),
+
+            SizedBox(height: 10),
+
+            buildSectionCard(
+              children: [
+                buildTile(Icons.dashboard, "Dashboard", onTap: () {}),
+                buildTile(Icons.bar_chart, "Reports", onTap: () {}),
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            buildSectionCard(
+              children: [
+                buildTile(
+                  Icons.history,
+                  "Appointment History",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminAppointmentHistory(),
+                      ),
+                    );
+                  },
+                ),
+                buildTile(Icons.people, "Manage Doctors", onTap: () {}),
+                buildTile(
+                  Icons.add,
+                  "Add Doctor",
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddDoctorPage()),
+                    );
+                  },
+                ),
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            buildSectionCard(
+              children: [
+                buildTile(Icons.notifications, "Notifications", onTap: () {}),
+                buildTile(Icons.settings, "Settings", onTap: () {}),
+              ],
+            ),
+
+            SizedBox(height: 10),
+
+            buildSectionCard(
+              children: [
+                buildTile(
+                  Icons.logout,
+                  'Log out',
+                  onTap: () {
+                    context.read<AuthViewModel>().logout(context);
+                  },
+                ),
+              ],
+            ),
+
+            SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

@@ -40,17 +40,14 @@ class UserHome extends StatelessWidget {
 
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(25.0),
+          padding: EdgeInsets.all(25.0),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "Hello, ${vm.userName} ",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 26,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
                 ),
 
                 SizedBox(height: 5),
@@ -58,31 +55,33 @@ class UserHome extends StatelessWidget {
                   'Find your doctor',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
-
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: Colors.grey[300],
                   ),
-                  child: const TextField(
+                  child: TextField(
+                    textAlign: TextAlign.start,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search_outlined),
                       hintText: 'Search your doctor, specialties',
                       border: InputBorder.none,
                     ),
+                    onChanged: (value) {
+                      context.read<UserHomeViewModel>().searchDoctors(value);
+                    },
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                /// 🔹 CATEGORIES
-                const Text(
+                Text(
                   "Departments",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
 
-                const SizedBox(height: 10),
+                SizedBox(height: 10),
 
                 SizedBox(
                   height: 80,
@@ -130,13 +129,13 @@ class UserHome extends StatelessWidget {
                       ),
                       CategoryItem(
                         icon: FontAwesomeIcons.brain,
-                        label: 'nuerology',
+                        label: 'neurology',
                         ontap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (_) =>
-                                  CategoryDoctorsScreen(category: 'nuerology'),
+                                  CategoryDoctorsScreen(category: 'neurology'),
                             ),
                           );
                         },
@@ -171,28 +170,23 @@ class UserHome extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
-
-                /// 🔹 DOCTORS LIST
-                const Text(
+                SizedBox(height: 20),
+                Text(
                   "Our Doctors",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
 
-                const SizedBox(height: 10),
-
-                vm.doctors.isEmpty
-                    ? const Center(child: CircularProgressIndicator())
+                SizedBox(height: 10),
+                vm.filteredDoctors.isEmpty
+                    ? Center(child: Text("No doctors found"))
                     : ListView.builder(
                         shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: vm.doctors.length,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: vm.filteredDoctors.length,
                         itemBuilder: (context, index) {
-                          final doctor = vm.doctors[index];
+                          final doctor = vm.filteredDoctors[index];
 
-                          return DoctorCard(
-                            doctor: doctor, // ✅ pass full model
-                          );
+                          return DoctorCard(doctor: doctor);
                         },
                       ),
               ],

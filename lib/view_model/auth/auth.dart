@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view_model/user/profile.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
@@ -10,7 +13,7 @@ class AuthViewModel extends ChangeNotifier {
   String? error;
 
   AuthViewModel() {
-    listenToAuthChanges(); // 🔥 important
+    listenToAuthChanges();
   }
 
   Stream<User?> get authState => _auth.authStateChanges();
@@ -70,7 +73,17 @@ class AuthViewModel extends ChangeNotifier {
     return doc.data()?['role'];
   }
 
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     await _auth.signOut();
+
+    /// 🔥 Clear local state
+    context.read<ProfileVM>().clear(); // we will add this
+
+    /// 🔥 Navigate cleanly
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => RoleSelectionScreen()),
+      (route) => false,
+    );
   }
 }

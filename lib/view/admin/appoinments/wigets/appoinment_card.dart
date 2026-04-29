@@ -19,13 +19,12 @@ Widget appointmentCard(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// NAME + STATUS
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              a['userName'] ?? '',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              "Patient: ${a['userName'] ?? 'Unknown'}",
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
               (a['status'] ?? '').toUpperCase(),
@@ -36,6 +35,7 @@ Widget appointmentCard(
         SizedBox(height: 6),
         Text("Doctor: ${a['doctorName']}"),
         Text("Time: ${a['time']}"),
+        Text("Date:${a['date']}"),
         SizedBox(height: 10),
         Row(
           children: [

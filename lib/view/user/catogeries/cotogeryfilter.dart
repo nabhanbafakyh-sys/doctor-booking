@@ -12,8 +12,8 @@ class CategoryDoctorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => CategoryViewModel()..fetchDoctorsByCategory(category),
-
+      create: (_) =>
+          CategoryViewModel()..fetchDoctorsByCategory(category), // 🔥 IMPORTANT
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -36,12 +36,16 @@ class CategoryDoctorsScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final data = vm.doctors[index];
 
+                double rating = data['rating'] is double
+                    ? data['rating']
+                    : double.tryParse(data['rating'].toString()) ?? 0.0;
+
                 final doctor = DoctorModel(
                   id: data['id'] ?? '',
                   name: data['name'] ?? '',
                   specialization: data['specialization'] ?? '',
                   hospital: data['hospital'] ?? '',
-                  rating: (data['rating'] ?? 0).toDouble(),
+                  rating: rating,
                   image: data['image'] ?? '',
                 );
 

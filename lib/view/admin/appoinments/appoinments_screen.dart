@@ -18,7 +18,7 @@ class AdminDashboard extends StatelessWidget {
             appBar: AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
-              title: const Text(
+              title: Text(
                 "Appointment Oversight",
                 style: TextStyle(color: Colors.black),
               ),

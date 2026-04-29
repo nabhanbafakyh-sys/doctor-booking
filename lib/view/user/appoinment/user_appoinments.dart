@@ -60,6 +60,7 @@ class UserAppointments extends StatelessWidget {
                           itemCount: vm.filteredAppointments.length,
                           itemBuilder: (context, index) {
                             final appt = vm.filteredAppointments[index];
+
                             DateTime parsedDate;
                             try {
                               parsedDate = DateTime.parse(
@@ -165,6 +166,97 @@ class UserAppointments extends StatelessWidget {
                                         ],
                                       ),
                                       SizedBox(height: 14),
+
+                                      if (appt['status'] == 'cancelled')
+                                        Container(
+                                          margin: const EdgeInsets.only(
+                                            top: 10,
+                                          ),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              const Icon(
+                                                Icons.cancel,
+                                                color: Colors.red,
+                                                size: 18,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                child: Text(
+                                                  "This appointment was cancelled by admin",
+                                                  style: TextStyle(
+                                                    color: Colors.red.shade700,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      if (appt['status'] == 'confirmed')
+                                        Container(
+                                          width: 200,
+                                          margin: EdgeInsets.only(top: 10),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: const [
+                                              Icon(
+                                                Icons.check_circle,
+                                                color: Colors.green,
+                                                size: 18,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "Appointment confirmed",
+                                                style: TextStyle(
+                                                  color: Colors.green,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      if (appt['status'] == 'pending')
+                                        Container(
+                                          width: 200,
+                                          margin: const EdgeInsets.only(
+                                            top: 10,
+                                          ),
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.hourglass_top,
+                                                color: Colors.orange,
+                                                size: 18,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                "confirmation is pending",
+                                                style: TextStyle(
+                                                  color: Colors.orange,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      SizedBox(height: 20),
                                       Row(
                                         children: [
                                           Expanded(

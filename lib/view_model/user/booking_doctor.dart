@@ -38,7 +38,6 @@ class BookingVM extends ChangeNotifier {
 
       final dateStr = selecteddate!.toIso8601String();
 
-      /// 🔥 SAFE TRANSACTION (prevents double booking)
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         final query = await booking
             .collection('appointments')
@@ -60,10 +59,10 @@ class BookingVM extends ChangeNotifier {
           'specialization': specialty,
           'hospital': hospital,
           'image': image,
-          'userName': userName,
+          'username': userName,
           'date': dateStr,
           'time': selectedtime,
-          'status': "confirmed",
+          'status': "pending",
           'createdAt': Timestamp.now(),
         });
       });

@@ -7,6 +7,7 @@ import 'package:room_rental/model/doctor.dart';
 class UserHomeViewModel extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  List<DoctorModel> filteredDoctors = [];
   List<DoctorModel> doctors = [];
   String userName = "User";
   bool isLoading = true;
@@ -17,15 +18,13 @@ class UserHomeViewModel extends ChangeNotifier {
 
   UserHomeViewModel() {
     _listenToAuth();
-    fetchdoctors();
+    fetchDoctors();
   }
 
-  /// 🔥 Listen to login/logout
   void _listenToAuth() {
     _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
       _userSub?.cancel();
 
-      /// 🔥 reset user data
       userName = "User";
       notifyListeners();
 
@@ -35,11 +34,13 @@ class UserHomeViewModel extends ChangeNotifier {
     });
   }
 
-  void fetchdoctors() {
+  void fetchDoctors() {
     _firestore.collection('Doctors').snapshots().listen((snapshot) {
       doctors = snapshot.docs.map((doc) {
         return DoctorModel.fromFirestore(doc.data(), doc.id);
       }).toList();
+
+      filteredDoctors = doctors;
 
       notifyListeners();
     });
@@ -56,6 +57,22 @@ class UserHomeViewModel extends ChangeNotifier {
       }
       notifyListeners();
     });
+  }
+
+  void searchDoctors(String query) {
+    if (query.isEmpty) {
+      filteredDoctors = doctors;
+    } else {
+      final q = query.toLowerCase();
+
+      filteredDoctors = doctors.where((doctor) {
+        return doctor.name.toLowerCase().contains(q) ||
+            doctor.specialization.toLowerCase().contains(q) ||
+            doctor.hospital.toLowerCase().contains(q);
+      }).toList();
+    }
+
+    notifyListeners();
   }
 
   @override

@@ -51,16 +51,14 @@ class AdminDashboardViewModel extends ChangeNotifier {
     }
   }
 
-  /// 🔥 APPROVE
   Future<void> approve(String id) async {
     await _firestore.collection('appointments').doc(id).update({
       'status': 'confirmed',
     });
   }
 
-  /// 🔥 CANCEL
   Future<void> cancel(String id) async {
-    await _firestore.collection('appointments').doc(id).update({
+    await FirebaseFirestore.instance.collection('appointments').doc(id).update({
       'status': 'cancelled',
     });
   }
