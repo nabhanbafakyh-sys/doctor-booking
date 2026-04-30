@@ -8,7 +8,7 @@ class CategoryViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> doctors = [];
   bool isLoading = true;
 
-  void fetchDoctorsByCategory(String category) {
+  Future<void> fetchDoctorsByCategory(String category) async {
     isLoading = true;
     notifyListeners();
 

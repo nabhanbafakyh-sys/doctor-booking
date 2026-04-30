@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ProfileVM extends ChangeNotifier {
+class adminProfileVM extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   String name = "";
@@ -15,7 +15,7 @@ class ProfileVM extends ChangeNotifier {
 
   StreamSubscription? _authSub;
 
-  ProfileVM() {
+  adminProfileVM() {
     listenToAuth();
   }
   void clear() {

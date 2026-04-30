@@ -15,16 +15,23 @@ Widget sectionTitle(String title) {
 
 Widget infoCard(String title, String value) {
   return Container(
-    width: 120,
-    padding: const EdgeInsets.all(14),
+    width: 100,
+    padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
-      color: Colors.grey.shade100,
-      borderRadius: BorderRadius.circular(15),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
+      ],
     ),
     child: Column(
       children: [
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
-        Text(title, style: TextStyle(color: Colors.grey)),
+        Text(
+          value,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        SizedBox(height: 4),
+        Text(title, style: TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     ),
   );

@@ -19,6 +19,7 @@ class UserHome extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
         leading: Padding(
           padding: const EdgeInsets.only(left: 16),
           child: Icon(Icons.person_2_outlined, color: Colors.teal.shade300),

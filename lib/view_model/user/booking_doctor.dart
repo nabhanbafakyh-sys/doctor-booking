@@ -8,7 +8,7 @@ class BookingVM extends ChangeNotifier {
 
   final FirebaseFirestore booking = FirebaseFirestore.instance;
 
-  void pickdate(DateTime date) {
+  Future<void> pickdate(DateTime date) async {
     selecteddate = date;
     notifyListeners();
   }

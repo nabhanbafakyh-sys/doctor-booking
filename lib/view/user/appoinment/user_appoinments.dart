@@ -23,10 +23,11 @@ class UserAppointments extends StatelessWidget {
             }
           },
           child: Scaffold(
-            backgroundColor: Colors.grey[100],
+            backgroundColor: Colors.white,
             appBar: AppBar(
+              scrolledUnderElevation: 0,
               backgroundColor: Colors.white,
-              title: const Text("Appointments"),
+              title: Text("Appointments"),
               centerTitle: true,
               automaticallyImplyLeading: false,
             ),
@@ -69,11 +70,8 @@ class UserAppointments extends StatelessWidget {
                             } catch (e) {
                               parsedDate = DateTime.now();
                             }
-                            String date = DateFormat(
-                              'MMM dd, yyyy',
-                            ).format(parsedDate);
-                            String time = appt['time'] ?? '';
-                            return AppointmentCard(
+                            DateFormat('MMM dd, yyyy').format(parsedDate);
+                            return userAppointmentCard(
                               appt: appt,
                               showUpcoming: vm.showUpcoming,
                             );

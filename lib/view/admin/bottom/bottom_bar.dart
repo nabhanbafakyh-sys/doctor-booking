@@ -18,6 +18,7 @@ class AdminBottomBar extends StatelessWidget {
       backgroundColor: Colors.white,
       body: pages[vm.selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         currentIndex: vm.selectedIndex,
         onTap: vm.changeIndex,
         selectedItemColor: Color(0xFF1E2A78),

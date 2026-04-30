@@ -17,11 +17,11 @@ class UserHomeViewModel extends ChangeNotifier {
   StreamSubscription? _authSub;
 
   UserHomeViewModel() {
-    _listenToAuth();
+    listenToAuth();
     fetchDoctors();
   }
 
-  void _listenToAuth() {
+  Future<void> listenToAuth() async {
     _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
       _userSub?.cancel();
 
@@ -34,7 +34,7 @@ class UserHomeViewModel extends ChangeNotifier {
     });
   }
 
-  void fetchDoctors() {
+  Future<void> fetchDoctors() async {
     _firestore.collection('Doctors').snapshots().listen((snapshot) {
       doctors = snapshot.docs.map((doc) {
         return DoctorModel.fromFirestore(doc.data(), doc.id);
@@ -46,7 +46,7 @@ class UserHomeViewModel extends ChangeNotifier {
     });
   }
 
-  void listenUser(String userId) {
+  Future listenUser(String userId) async {
     _userSub = _firestore.collection('Users').doc(userId).snapshots().listen((
       doc,
     ) {
@@ -59,7 +59,7 @@ class UserHomeViewModel extends ChangeNotifier {
     });
   }
 
-  void searchDoctors(String query) {
+  Future searchDoctors(String query) async {
     if (query.isEmpty) {
       filteredDoctors = doctors;
     } else {
@@ -76,7 +76,7 @@ class UserHomeViewModel extends ChangeNotifier {
   }
 
   @override
-  void dispose() {
+  Future dispose() async {
     _doctorSub?.cancel();
     _userSub?.cancel();
     _authSub?.cancel();

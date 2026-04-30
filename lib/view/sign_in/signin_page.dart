@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role/role.dart';
@@ -25,7 +24,7 @@ class _SigninPageState extends State<SigninPage> {
   Widget build(BuildContext context) {
     // final roleVM = context.watch<RoleViewModel>();
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           Positioned(
@@ -60,10 +59,7 @@ class _SigninPageState extends State<SigninPage> {
                     Text(
                       'Sign up and improve your health today.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: TextStyle(fontSize: 15, color: Colors.black),
                     ),
                     SizedBox(height: 40),
                     Customtextfield(

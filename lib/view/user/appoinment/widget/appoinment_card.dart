@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
 import 'package:room_rental/widgets/info.dart';
 
-class AppointmentCard extends StatelessWidget {
+class userAppointmentCard extends StatelessWidget {
   final Map<String, dynamic> appt;
   final bool showUpcoming;
 
-  const AppointmentCard({
+  const userAppointmentCard({
     super.key,
     required this.appt,
     required this.showUpcoming,
@@ -107,7 +108,7 @@ class AppointmentCard extends StatelessWidget {
 
               const SizedBox(height: 14),
 
-              /// STATUS
+              ///STATUS
               if (appt['status'] == 'cancelled')
                 _statusBox(Colors.red, Icons.cancel, "Cancelled by admin"),
 
@@ -161,6 +162,7 @@ class AppointmentCard extends StatelessWidget {
 
   Widget _statusBox(Color color, IconData icon, String text) {
     return Container(
+      width: 200,
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(

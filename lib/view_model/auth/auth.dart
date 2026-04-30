@@ -8,7 +8,6 @@ import 'package:room_rental/view_model/user/profile.dart';
 class AuthViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
-
   bool isLoading = false;
   String? error;
 
@@ -50,10 +49,8 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> _ensureUserDoc(User? user) async {
     if (user == null) return;
-
     final ref = _db.collection('users').doc(user.uid);
     final doc = await ref.get();
-
     if (!doc.exists) {
       await ref.set({
         'name': user.email?.split('@')[0] ?? '',
@@ -75,11 +72,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> logout(BuildContext context) async {
     await _auth.signOut();
-
-    /// 🔥 Clear local state
-    context.read<ProfileVM>().clear(); // we will add this
-
-    /// 🔥 Navigate cleanly
+    context.read<ProfileVM>().clear();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => RoleSelectionScreen()),

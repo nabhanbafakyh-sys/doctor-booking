@@ -17,7 +17,7 @@ class AppointmentViewModel extends ChangeNotifier {
     _listenToAuth();
   }
 
-  void _listenToAuth() {
+  Future<void> _listenToAuth() async {
     _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
       _appointmentSub?.cancel();
 
@@ -35,10 +35,9 @@ class AppointmentViewModel extends ChangeNotifier {
   }
 
   // Listen to appointments of current user
-  void Appointments(String userId) {
+  Future<void> Appointments(String userId) async {
     isLoading = true;
     notifyListeners();
-
     _appointmentSub = _db
         .collection('appointments')
         .where('userId', isEqualTo: userId)

@@ -173,7 +173,7 @@ class BookingScreen extends StatelessWidget {
 
                 if (result == "success") {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Appointment booked ")),
+                    const SnackBar(content: Text("waiting for approval ")),
                   );
                 } else {
                   ScaffoldMessenger.of(

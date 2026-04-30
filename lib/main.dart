@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
+import 'package:room_rental/view_model/admin/admin_profile.dart';
 import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
 import 'package:room_rental/view_model/admin/doctor_addVM.dart';
 import 'package:room_rental/view_model/auth/auth.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserHomeViewModel()),
         ChangeNotifierProvider(create: (_) => AdminDashboardViewModel()),
         ChangeNotifierProvider(create: (_) => MyDoctorsViewModel()),
+        ChangeNotifierProvider(create: (_) => adminProfileVM()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

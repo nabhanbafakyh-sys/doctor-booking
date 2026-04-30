@@ -8,7 +8,18 @@ class AdminDoctorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Manage Doctors")),
+      backgroundColor: const Color(0xFFF5F7FB),
+
+      appBar: AppBar(
+        title: const Text(
+          "Manage Doctors",
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('Doctors').snapshots(),
         builder: (context, snapshot) {
@@ -19,78 +30,131 @@ class AdminDoctorsScreen extends StatelessWidget {
           final docs = snapshot.data!.docs;
 
           if (docs.isEmpty) {
-            return const Center(child: Text("No doctors found"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(
+                    Icons.medical_services_outlined,
+                    size: 60,
+                    color: Colors.grey,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "No doctors found",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
           }
 
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
-
-              return Card(
-                margin: const EdgeInsets.all(10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // 🔥 HERO CARD
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.teal.shade400, Colors.teal.shade700],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                elevation: 3,
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Doctor Management",
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "${docs.length} Doctors Available",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              ...docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 14),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(radius: 28, child: Icon(Icons.person)),
+                          CircleAvatar(
+                            radius: 28,
+                            backgroundColor: Colors.teal.shade50,
+                            child: Icon(Icons.person, color: Colors.teal),
+                          ),
                           SizedBox(width: 12),
-
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   data['name'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 16,
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
                                 ),
+                                SizedBox(height: 2),
                                 Text(
                                   data['specialization'] ?? '',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.grey),
                                 ),
                                 Text(
                                   data['hospital'] ?? '',
-                                  style: const TextStyle(color: Colors.grey),
+                                  style: TextStyle(color: Colors.grey),
                                 ),
                               ],
                             ),
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 12),
-
-                      /// 🔹 BUTTONS
+                      SizedBox(height: 14),
                       Row(
                         children: [
-                          /// ✏️ EDIT
                           Expanded(
-                            child: ElevatedButton.icon(
+                            child: OutlinedButton.icon(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => EditDoctorPage(
-                                      docId: docs[index].id,
+                                      docId: doc.id,
                                       data: data,
                                     ),
                                   ),
                                 );
                               },
-                              icon: const Icon(Icons.edit, size: 18),
-                              label: const Text("Edit"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
+                              icon: Icon(Icons.edit, size: 18),
+                              label: Text("Edit"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.teal,
+                                side: BorderSide(color: Colors.teal),
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
@@ -100,19 +164,15 @@ class AdminDoctorsScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-
-                          const SizedBox(width: 10),
-
-                          /// 🗑 DELETE
+                          SizedBox(width: 10),
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () async {
-                                /// 🔥 CONFIRM BEFORE DELETE
                                 final confirm = await showDialog(
                                   context: context,
                                   builder: (_) => AlertDialog(
-                                    title: const Text("Delete Doctor"),
-                                    content: const Text(
+                                    title: Text("Delete Doctor"),
+                                    content: Text(
                                       "Are you sure you want to delete this doctor?",
                                     ),
                                     actions: [
@@ -124,7 +184,7 @@ class AdminDoctorsScreen extends StatelessWidget {
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
-                                        child: const Text("Delete"),
+                                        child: Text("Delete"),
                                       ),
                                     ],
                                   ),
@@ -133,14 +193,14 @@ class AdminDoctorsScreen extends StatelessWidget {
                                 if (confirm == true) {
                                   await FirebaseFirestore.instance
                                       .collection('Doctors')
-                                      .doc(docs[index].id)
+                                      .doc(doc.id)
                                       .delete();
                                 }
                               },
-                              icon: const Icon(Icons.delete, size: 18),
-                              label: const Text("Delete"),
+                              icon: Icon(Icons.delete, size: 18),
+                              label: Text("Delete"),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red.shade300,
+                                backgroundColor: Colors.red.shade400,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
@@ -154,9 +214,9 @@ class AdminDoctorsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-              );
-            },
+                );
+              }).toList(),
+            ],
           );
         },
       ),

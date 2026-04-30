@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:room_rental/core/themes/app_colors.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
@@ -58,10 +57,7 @@ class Loginscren extends StatelessWidget {
                     Text(
                       'Access your personalized health\n dashboard and health records.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: AppColors.textPrimary,
-                      ),
+                      style: TextStyle(fontSize: 15),
                     ),
                     SizedBox(height: 40),
                     Customtextfield(

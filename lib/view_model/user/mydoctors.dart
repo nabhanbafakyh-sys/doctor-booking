@@ -12,10 +12,10 @@ class MyDoctorsViewModel extends ChangeNotifier {
   StreamSubscription? _subscription;
 
   MyDoctorsViewModel() {
-    _listenToAuth();
+    listenToAuth();
   }
 
-  void _listenToAuth() {
+  Future listenToAuth() async {
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
         fetchMyDoctors(user.uid);
@@ -28,7 +28,7 @@ class MyDoctorsViewModel extends ChangeNotifier {
   }
 
   // Fetch appointments
-  void fetchMyDoctors(String userId) {
+  Future fetchMyDoctors(String userId) async {
     _subscription?.cancel();
 
     isLoading = true;
