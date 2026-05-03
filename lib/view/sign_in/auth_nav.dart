@@ -22,7 +22,7 @@ class AuthGate extends StatelessWidget {
 
         if (snapshot.hasData) {
           return FutureBuilder<String?>(
-            future: auth.getRole(),
+            future: auth.getRole(context),
             builder: (context, roleSnap) {
               if (!roleSnap.hasData) {
                 return const CircularProgressIndicator();

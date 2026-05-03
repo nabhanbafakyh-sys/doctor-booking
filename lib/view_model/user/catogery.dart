@@ -1,33 +1,28 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class CategoryViewModel extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
+
+  CategoryViewModel(this.clinicProvider);
 
   List<Map<String, dynamic>> doctors = [];
-  bool isLoading = true;
+  bool isloading = true;
 
   Future<void> fetchDoctorsByCategory(String category) async {
-    isLoading = true;
-    notifyListeners();
+    final cid = clinicProvider.clinicId;
+    if (cid == null) return;
 
-    _firestore
-        .collection('Doctors')
+    _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('doctors')
         .where('specialization', isEqualTo: category)
         .snapshots()
-        .listen((snapshot) {
-          debugPrint("TOTAL DOCS FROM FIRESTORE: ${snapshot.docs.length}");
-
-          for (var doc in snapshot.docs) {
-            debugPrint("DOC DATA: ${doc.data()}");
-          }
-
-          doctors = snapshot.docs.map((doc) {
-            return {'id': doc.id, ...doc.data()};
-          }).toList();
-
-          isLoading = false;
+        .listen((snap) {
+          doctors = snap.docs.map((e) => {'id': e.id, ...e.data()}).toList();
           notifyListeners();
         });
   }

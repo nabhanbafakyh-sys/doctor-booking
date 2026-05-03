@@ -4,16 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view_model/user/profile.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
+
   bool isLoading = false;
   String? error;
-
-  AuthViewModel() {
-    listenToAuthChanges();
-  }
 
   Stream<User?> get authState => _auth.authStateChanges();
 
@@ -27,7 +25,7 @@ class AuthViewModel extends ChangeNotifier {
         password: password,
       );
 
-      await _ensureUserDoc(cred.user);
+      await _ensureGlobalUser(cred.user); // ✅ only global
 
       return true;
     } catch (e) {
@@ -39,18 +37,34 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  void listenToAuthChanges() {
-    _auth.authStateChanges().listen((user) async {
-      if (user != null) {
-        await _ensureUserDoc(user);
-      }
-    });
+  // ✅ GLOBAL USER (basic info only)
+  Future<void> _ensureGlobalUser(User? user) async {
+    if (user == null) return;
+
+    final ref = _db.collection('users').doc(user.uid);
+
+    final doc = await ref.get();
+
+    if (!doc.exists) {
+      await ref.set({'email': user.email, 'createdAt': Timestamp.now()});
+    }
   }
 
-  Future<void> _ensureUserDoc(User? user) async {
-    if (user == null) return;
-    final ref = _db.collection('users').doc(user.uid);
+  // ✅ ADD USER TO CLINIC (IMPORTANT 🔥)
+  Future<void> attachUserToClinic(BuildContext context) async {
+    final user = _auth.currentUser;
+    final clinicId = context.read<ClinicProvider>().clinicId;
+
+    if (user == null || clinicId == null) return;
+
+    final ref = _db
+        .collection('clinics')
+        .doc(clinicId)
+        .collection('users')
+        .doc(user.uid);
+
     final doc = await ref.get();
+
     if (!doc.exists) {
       await ref.set({
         'name': user.email?.split('@')[0] ?? '',
@@ -62,21 +76,39 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<String?> getRole() async {
-    final user = _auth.currentUser;
-    if (user == null) return null;
-
-    final doc = await _db.collection('users').doc(user.uid).get();
-    return doc.data()?['role'];
-  }
-
   Future<void> logout(BuildContext context) async {
     await _auth.signOut();
+
     context.read<ProfileVM>().clear();
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => RoleSelectionScreen()),
       (route) => false,
     );
+  }
+
+  Future<String?> getRole(BuildContext context) async {
+    final user = _auth.currentUser;
+    final clinicId = context.read<ClinicProvider>().clinicId;
+
+    if (user == null || clinicId == null) return null;
+
+    try {
+      final doc = await _db
+          .collection('clinics')
+          .doc(clinicId)
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (doc.exists) {
+        return doc.data()?['role'];
+      }
+    } catch (e) {
+      debugPrint("Get role error: $e");
+    }
+
+    return null;
   }
 }

@@ -1,85 +1,89 @@
-import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:room_rental/model/doctor.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class UserHomeViewModel extends ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
 
-  List<DoctorModel> filteredDoctors = [];
+  UserHomeViewModel(this.clinicProvider);
+
   List<DoctorModel> doctors = [];
-  String userName = "User";
+  List<DoctorModel> filteredDoctors = [];
+
+  String userName = "";
   bool isLoading = true;
 
-  StreamSubscription? _doctorSub;
-  StreamSubscription? _userSub;
-  StreamSubscription? _authSub;
-
-  UserHomeViewModel() {
-    listenToAuth();
-    fetchDoctors();
-  }
-
-  Future<void> listenToAuth() async {
-    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
-      _userSub?.cancel();
-
-      userName = "User";
-      notifyListeners();
-
-      if (user != null) {
-        listenUser(user.uid);
-      }
-    });
-  }
-
-  Future<void> fetchDoctors() async {
-    _firestore.collection('Doctors').snapshots().listen((snapshot) {
-      doctors = snapshot.docs.map((doc) {
-        return DoctorModel.fromFirestore(doc.data(), doc.id);
-      }).toList();
-
-      filteredDoctors = doctors;
-
-      notifyListeners();
-    });
-  }
-
-  Future listenUser(String userId) async {
-    _userSub = _firestore.collection('Users').doc(userId).snapshots().listen((
-      doc,
-    ) {
-      if (doc.exists) {
-        userName = doc['name'] ?? "User";
-      } else {
-        userName = "User";
-      }
-      notifyListeners();
-    });
-  }
-
-  Future searchDoctors(String query) async {
-    if (query.isEmpty) {
-      filteredDoctors = doctors;
+  void init() {
+    if (clinicProvider.clinicId != null) {
+      _loadAll();
     } else {
-      final q = query.toLowerCase();
+      clinicProvider.addListener(_onClinicReady);
+    }
+  }
 
-      filteredDoctors = doctors.where((doctor) {
-        return doctor.name.toLowerCase().contains(q) ||
-            doctor.specialization.toLowerCase().contains(q) ||
-            doctor.hospital.toLowerCase().contains(q);
-      }).toList();
+  void _onClinicReady() {
+    if (clinicProvider.clinicId != null) {
+      clinicProvider.removeListener(_onClinicReady);
+      _loadAll();
+    }
+  }
+
+  void _loadAll() {
+    fetchDoctors();
+    fetchUser();
+  }
+
+  void fetchDoctors() {
+    final cid = clinicProvider.clinicId!;
+    _db.collection('clinics').doc(cid).collection('doctors').snapshots().listen(
+      (snap) {
+        doctors = snap.docs
+            .map((e) => DoctorModel.fromFirestore(e.data(), e.id))
+            .toList();
+
+        filteredDoctors = doctors;
+        notifyListeners();
+      },
+    );
+  }
+
+  Future<void> fetchUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+
+    if (user == null || cid == null) return;
+
+    final doc = await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data()!;
+      userName = data['name'] ?? "";
     }
 
+    isLoading = false;
     notifyListeners();
   }
 
-  @override
-  Future dispose() async {
-    _doctorSub?.cancel();
-    _userSub?.cancel();
-    _authSub?.cancel();
-    super.dispose();
+  void search(String query) {
+    if (query.isEmpty) {
+      filteredDoctors = doctors;
+    } else {
+      filteredDoctors = doctors
+          .where(
+            (d) =>
+                d.name.toLowerCase().contains(query.toLowerCase()) ||
+                d.specialization.toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList();
+    }
+    notifyListeners();
   }
 }

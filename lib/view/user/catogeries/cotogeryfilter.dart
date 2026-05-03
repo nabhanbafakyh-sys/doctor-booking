@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/model/doctor.dart';
 import 'package:room_rental/view/user/home/widgets/doctor_card.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 import 'package:room_rental/view_model/user/catogery.dart';
 
 class CategoryDoctorsScreen extends StatelessWidget {
@@ -12,8 +13,9 @@ class CategoryDoctorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) =>
-          CategoryViewModel()..fetchDoctorsByCategory(category), // 🔥 IMPORTANT
+      create: (context) =>
+          CategoryViewModel(context.read<ClinicProvider>())
+            ..fetchDoctorsByCategory(category),
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -24,7 +26,7 @@ class CategoryDoctorsScreen extends StatelessWidget {
         ),
         body: Consumer<CategoryViewModel>(
           builder: (context, vm, child) {
-            if (vm.isLoading) {
+            if (vm.isloading) {
               return Center(child: CircularProgressIndicator());
             }
             if (vm.doctors.isEmpty) {

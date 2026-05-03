@@ -1,118 +1,84 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class ProfileVM extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
 
-  String name = "";
-  String email = "";
-  String phone = "";
-  String role = "";
-
-  bool isLoading = true;
-
-  StreamSubscription? _authSub;
-
-  ProfileVM() {
-    listenToAuth();
-  }
-  void clear() {
-    name = "";
-    email = "";
-    phone = "";
-    role = "";
-    isLoading = true;
-    notifyListeners();
+  ProfileVM(this.clinicProvider) {
+    loadUser();
   }
 
-  Future listenToAuth() async {
-    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        loadUser();
-      } else {
-        _clearData();
-      }
-    });
-  }
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+
+  bool isLoading = false;
 
   Future<void> loadUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+
+    if (user == null || cid == null) return;
+
+    final doc = await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists) {
+      final data = doc.data()!;
+      nameController.text = data['name'] ?? "";
+      emailController.text = data['email'] ?? "";
+      phoneController.text = data['phone'] ?? "";
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+
+    if (user == null || cid == null) return;
+
     try {
       isLoading = true;
       notifyListeners();
 
-      final user = FirebaseAuth.instance.currentUser;
-
-      if (user == null) {
-        _clearData();
-        return;
-      }
-
-      final doc = await _db.collection('Users').doc(user.uid).get();
-
-      if (doc.exists) {
-        final data = doc.data()!;
-        name = data['name'] ?? "";
-        email = data['email'] ?? user.email ?? "";
-        phone = data['phone'] ?? "";
-        role = data['role'] ?? "";
-      }
-
-      isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Load error: $e");
-      isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Update profile
-  Future<bool> updateProfile({
-    required String newName,
-    required String newPhone,
-    required String newEmail,
-  }) async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return false;
-      // Update email (may require re-login)
-      if (user.email != newEmail) {
-        await user.updateEmail(newEmail);
-      }
-      await _db.collection('Users').doc(user.uid).update({
-        'name': newName,
-        'phone': newPhone,
-        'email': newEmail,
-      });
-
-      // Update state instantly
-      name = newName;
-      phone = newPhone;
-      email = newEmail;
-
-      notifyListeners();
-      return true;
+      await _db
+          .collection('clinics')
+          .doc(cid)
+          .collection('users')
+          .doc(user.uid)
+          .update({
+            'name': nameController.text.trim(),
+            'email': emailController.text.trim(),
+            'phone': phoneController.text.trim(),
+          });
     } catch (e) {
       debugPrint("Update error: $e");
-      return false;
     }
+
+    isLoading = false;
+    notifyListeners();
   }
 
-  // Clear data when user logs out
-  void _clearData() {
-    name = "";
-    email = "";
-    phone = "";
-    role = "";
-    isLoading = false;
+  void clear() {
+    nameController.clear();
+    phoneController.clear();
+    emailController.clear();
     notifyListeners();
   }
 
   @override
   void dispose() {
-    _authSub?.cancel();
+    nameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 }

@@ -95,8 +95,8 @@ class BookingScreen extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final date = DateTime.now().add(Duration(days: index));
                       final isSelected =
-                          vm.selecteddate != null &&
-                          DateFormat('yyyy-MM-dd').format(vm.selecteddate!) ==
+                          vm.selectedDate != null &&
+                          DateFormat('yyyy-MM-dd').format(vm.selectedDate!) ==
                               DateFormat('yyyy-MM-dd').format(date);
 
                       return GestureDetector(

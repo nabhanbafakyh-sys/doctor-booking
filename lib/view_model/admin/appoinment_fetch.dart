@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class AdminDashboardViewModel extends ChangeNotifier {
-  AdminDashboardViewModel() {
-    _listenToAppointments();
-  }
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
+
+  AdminDashboardViewModel(this.clinicProvider) {
+    _init();
+  }
 
   List<Map<String, dynamic>> appointments = [];
   int totalToday = 0;
@@ -16,9 +18,27 @@ class AdminDashboardViewModel extends ChangeNotifier {
 
   StreamSubscription? _subscription;
 
+  void _init() {
+    if (clinicProvider.clinicId != null) {
+      _listenToAppointments();
+    } else {
+      clinicProvider.addListener(_waitForClinic);
+    }
+  }
+
+  void _waitForClinic() {
+    if (clinicProvider.clinicId != null) {
+      clinicProvider.removeListener(_waitForClinic);
+      _listenToAppointments();
+    }
+  }
+
   void _listenToAppointments() {
+    final cid = clinicProvider.clinicId!;
     _subscription = _firestore
-        .collection('appointments')
+        .collection('clinics')
+        .doc(cid)
+        .collection('appointments') // ✅ FIXED
         .orderBy('createdAt', descending: true)
         .snapshots()
         .listen(
@@ -35,7 +55,6 @@ class AdminDashboardViewModel extends ChangeNotifier {
         );
   }
 
-  // Sync — no need for async
   void _calculateStats() {
     final today = DateTime.now();
     totalToday = 0;
@@ -43,28 +62,48 @@ class AdminDashboardViewModel extends ChangeNotifier {
     cancelled = 0;
 
     for (final a in appointments) {
-      final date = DateTime.tryParse(a['date'] ?? '');
+      // 🔒 Safe date handling (supports string or Timestamp)
+      DateTime? date;
+      if (a['date'] is String) {
+        date = DateTime.tryParse(a['date']);
+      } else if (a['date'] is Timestamp) {
+        date = (a['date'] as Timestamp).toDate();
+      }
+
       if (date != null &&
           date.year == today.year &&
           date.month == today.month &&
           date.day == today.day) {
         totalToday++;
       }
+
       if (a['status'] == 'pending') pending++;
       if (a['status'] == 'cancelled') cancelled++;
     }
   }
 
   Future<void> approve(String id) async {
-    await _firestore.collection('appointments').doc(id).update({
-      'status': 'confirmed',
-    });
+    final cid = clinicProvider.clinicId;
+    if (cid == null) return;
+
+    await _firestore
+        .collection('clinics')
+        .doc(cid)
+        .collection('appointments')
+        .doc(id)
+        .update({'status': 'confirmed'});
   }
 
   Future<void> cancel(String id) async {
-    await _firestore.collection('appointments').doc(id).update({
-      'status': 'cancelled',
-    });
+    final cid = clinicProvider.clinicId;
+    if (cid == null) return;
+
+    await _firestore
+        .collection('clinics')
+        .doc(cid)
+        .collection('appointments')
+        .doc(id)
+        .update({'status': 'cancelled'});
   }
 
   @override

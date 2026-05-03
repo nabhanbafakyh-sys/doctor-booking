@@ -18,7 +18,7 @@ class _EditAdminState extends State<EditAdmin> {
   void initState() {
     super.initState();
 
-    final vm = context.read<adminProfileVM>();
+    final vm = context.read<AdminProfileVm>();
 
     nameController.text = vm.name;
     phoneController.text = vm.phone;
@@ -27,7 +27,7 @@ class _EditAdminState extends State<EditAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.read<adminProfileVM>();
+    final vm = context.read<AdminProfileVm>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),

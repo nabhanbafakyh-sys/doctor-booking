@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/profile/edit_admin.dart';
-import 'package:room_rental/view/user/profile/edit_profile.dart';
 import 'package:room_rental/view_model/admin/admin_profile.dart';
 import 'package:room_rental/view_model/user/profile.dart';
 
@@ -19,9 +18,9 @@ class AdminInfo extends StatelessWidget {
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      body: Consumer<adminProfileVM>(
+      body: Consumer<AdminProfileVm>(
         builder: (context, vm, _) {
-          if (vm.isLoading) {
+          if (vm.isloading) {
             return Center(child: CircularProgressIndicator());
           }
           return Padding(

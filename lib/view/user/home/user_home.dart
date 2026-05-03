@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:room_rental/view_model/user/homeviewmodel.dart';
 import 'package:room_rental/widgets/catogery.dart';
@@ -13,7 +12,6 @@ class UserHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<UserHomeViewModel>();
-    final userId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -70,7 +68,7 @@ class UserHome extends StatelessWidget {
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {
-                      context.read<UserHomeViewModel>().searchDoctors(value);
+                      context.read<UserHomeViewModel>().search(value);
                     },
                   ),
                 ),

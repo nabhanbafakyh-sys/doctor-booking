@@ -1,61 +1,65 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class AdminHomeViewModel extends ChangeNotifier {
-  AdminHomeViewModel() {
-    _listenToDoctors();
-  }
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  AdminHomeViewModel(this.clinicProvider) {
+    _init();
+  }
 
   List<Map<String, dynamic>> doctors = [];
   bool isLoading = true;
 
-  StreamSubscription? _subscription;
+  StreamSubscription? _sub;
 
-  void _listenToDoctors() {
-    isLoading = true;
-    notifyListeners();
-
-    _subscription = _firestore
-        .collection('Doctors')
-        .snapshots()
-        .listen(
-          (snapshot) {
-            doctors = snapshot.docs
-                .map((doc) => {'id': doc.id, ...doc.data()})
-                .toList();
-            isLoading = false;
-            notifyListeners();
-          },
-          onError: (e) {
-            isLoading = false;
-            notifyListeners();
-            debugPrint('Doctor stream error: $e');
-          },
-        );
-  }
-
-  Map<String, dynamic>? getDoctorById(String id) {
-    try {
-      return doctors.firstWhere((doc) => doc['id'] == id);
-    } catch (_) {
-      return null;
+  void _init() {
+    if (clinicProvider.clinicId != null) {
+      _listen();
+    } else {
+      clinicProvider.addListener(_waitForClinic);
     }
   }
 
-  Future<void> updateDoctor(String id, Map<String, dynamic> data) async {
-    await _firestore.collection('Doctors').doc(id).update(data);
+  void _waitForClinic() {
+    if (clinicProvider.clinicId != null) {
+      clinicProvider.removeListener(_waitForClinic);
+      _listen();
+    }
+  }
+
+  void _listen() {
+    final id = clinicProvider.clinicId!;
+    _sub = _db
+        .collection('clinics')
+        .doc(id)
+        .collection('doctors')
+        .snapshots()
+        .listen((snap) {
+          doctors = snap.docs.map((e) => {'id': e.id, ...e.data()}).toList();
+          isLoading = false;
+          notifyListeners();
+        });
   }
 
   Future<void> deleteDoctor(String id) async {
-    await _firestore.collection('Doctors').doc(id).delete();
+    final cid = clinicProvider.clinicId;
+    if (cid == null) return;
+
+    await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('doctors')
+        .doc(id)
+        .delete();
   }
 
   @override
   void dispose() {
-    _subscription?.cancel();
+    _sub?.cancel();
     super.dispose();
   }
 }

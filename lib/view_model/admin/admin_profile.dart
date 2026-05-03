@@ -1,118 +1,72 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
-class adminProfileVM extends ChangeNotifier {
+class AdminProfileVm extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
 
+  AdminProfileVm(this.clinicProvider) {
+    loadUser();
+  }
+  bool isloading = true;
   String name = "";
   String email = "";
   String phone = "";
-  String role = "";
-
-  bool isLoading = true;
-
-  StreamSubscription? _authSub;
-
-  adminProfileVM() {
-    listenToAuth();
-  }
-  void clear() {
-    name = "";
-    email = "";
-    phone = "";
-    role = "";
-    isLoading = true;
-    notifyListeners();
-  }
-
-  Future listenToAuth() async {
-    _authSub = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        loadUser();
-      } else {
-        _clearData();
-      }
-    });
-  }
 
   Future<void> loadUser() async {
-    try {
-      isLoading = true;
-      notifyListeners();
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
 
-      final user = FirebaseAuth.instance.currentUser;
+    if (user == null || cid == null) return;
 
-      if (user == null) {
-        _clearData();
-        return;
-      }
+    final doc = await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
-      final doc = await _db.collection('Users').doc(user.uid).get();
-
-      if (doc.exists) {
-        final data = doc.data()!;
-        name = data['name'] ?? "";
-        email = data['email'] ?? user.email ?? "";
-        phone = data['phone'] ?? "";
-        role = data['role'] ?? "";
-      }
-
-      isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Load error: $e");
-      isLoading = false;
+    if (doc.exists) {
+      final data = doc.data()!;
+      name = data['name'] ?? "";
+      email = data['email'] ?? "";
+      phone = data['phone'] ?? "";
       notifyListeners();
     }
   }
 
-  // Update profile
-  Future<bool> updateProfile({
+  Future<void> updateProfile({
     required String newName,
-    required String newPhone,
     required String newEmail,
+    required String newPhone,
   }) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+
+    if (user == null || cid == null) return;
+
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return false;
-      // Update email (may require re-login)
-      if (user.email != newEmail) {
-        await user.updateEmail(newEmail);
-      }
-      await _db.collection('Users').doc(user.uid).update({
-        'name': newName,
-        'phone': newPhone,
-        'email': newEmail,
-      });
-
-      // Update state instantly
-      name = newName;
-      phone = newPhone;
-      email = newEmail;
-
+      isloading = true;
       notifyListeners();
-      return true;
+
+      await _db
+          .collection('clinics')
+          .doc(cid)
+          .collection('users')
+          .doc(user.uid)
+          .update({'name': newName, 'email': newEmail, 'phone': newPhone});
+
+      // update local state
+      name = newName;
+      email = newEmail;
+      phone = newPhone;
     } catch (e) {
-      debugPrint("Update error: $e");
-      return false;
+      debugPrint("Update profile error: $e");
     }
-  }
 
-  // Clear data when user logs out
-  void _clearData() {
-    name = "";
-    email = "";
-    phone = "";
-    role = "";
-    isLoading = false;
+    isloading = false;
     notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _authSub?.cancel();
-    super.dispose();
   }
 }

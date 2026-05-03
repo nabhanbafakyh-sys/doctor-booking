@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
 import 'package:room_rental/view/user/my_doctors/my_doctors.dart';
-
 import 'package:room_rental/view/user/profile/personel_info.dart';
 import 'package:room_rental/widgets/sectioncard.dart';
 import 'package:room_rental/view_model/user/profile.dart';
@@ -44,7 +43,7 @@ class UserProfile extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    vm.name.isEmpty ? "User Name" : vm.name,
+                    vm.nameController.text,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 25),
@@ -57,10 +56,7 @@ class UserProfile extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => ProfileVM(),
-                                child: PersonalInfoPage(),
-                              ),
+                              builder: (_) => PersonalInfoPage(),
                             ),
                           );
                         },

@@ -1,20 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class BookingVM extends ChangeNotifier {
-  DateTime? selecteddate;
-  String? selectedtime;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final ClinicProvider clinicProvider;
 
-  final FirebaseFirestore booking = FirebaseFirestore.instance;
+  BookingVM(this.clinicProvider);
 
-  Future<void> pickdate(DateTime date) async {
-    selecteddate = date;
+  DateTime? selectedDate;
+  String? selectedTime;
+
+  void pickdate(DateTime date) {
+    selectedDate = date;
     notifyListeners();
   }
 
-  void picktime(String time) {
-    selectedtime = time;
+  void pickTime(String time) {
+    if (selectedTime == time) {
+      selectedTime = null; // toggle off
+    } else {
+      selectedTime = time;
+    }
     notifyListeners();
   }
 
@@ -25,53 +33,49 @@ class BookingVM extends ChangeNotifier {
     required String hospital,
     required String image,
   }) async {
-    try {
-      if (selecteddate == null || selectedtime == null) {
-        return "Please select date & time";
-      }
-
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return "User not logged in";
-
-      final userDoc = await booking.collection('users').doc(user.uid).get();
-      final userName = userDoc.data()?['name'] ?? "User";
-      final userData = userDoc.data();
-      final userPhone = userData?['phone'] ?? "";
-      final dateStr = selecteddate!.toIso8601String();
-
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        final query = await booking
-            .collection('appointments')
-            .where('doctorId', isEqualTo: doctorId)
-            .where('date', isEqualTo: dateStr)
-            .where('time', isEqualTo: selectedtime)
-            .get();
-
-        if (query.docs.isNotEmpty) {
-          throw Exception("Slot already booked");
-        }
-
-        final newDoc = booking.collection('appointments').doc();
-
-        transaction.set(newDoc, {
-          'userId': user.uid,
-          'doctorId': doctorId,
-          'doctorName': doctorName,
-          'specialization': specialty,
-          'hospital': hospital,
-          'image': image,
-          'userName': userName,
-          'userPhone': userPhone,
-          'date': dateStr,
-          'time': selectedtime,
-          'status': "pending",
-          'createdAt': Timestamp.now(),
-        });
-      });
-
-      return "success";
-    } catch (e) {
-      return e.toString();
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+    if (user == null || cid == null) return "Error";
+    if (selectedDate == null || selectedTime == null) {
+      return "Please select date and time";
     }
+
+    final userDoc = await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    final userName = userDoc.data()?['name'] ?? "User";
+
+    final dateStr = selectedDate!.toIso8601String();
+
+    // 🔥 Prevent double booking
+    final existing = await _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('appointments')
+        .where('doctorId', isEqualTo: doctorId)
+        .where('date', isEqualTo: dateStr)
+        .where('time', isEqualTo: selectedTime)
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      return "Slot already booked";
+    }
+
+    await _db.collection('clinics').doc(cid).collection('appointments').add({
+      'userId': user.uid,
+      'doctorId': doctorId,
+      'doctorName': doctorName,
+      'userName': userName,
+      'date': dateStr,
+      'time': selectedTime,
+      'status': "pending",
+      'createdAt': Timestamp.now(),
+    });
+
+    return "success";
   }
 }

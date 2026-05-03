@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:room_rental/view_model/admin/appoinment_fetch.dart';
+import 'package:provider/provider.dart';
+import 'package:room_rental/view_model/user/appoinment_vm.dart';
 import 'package:room_rental/widgets/info.dart';
 
 class userAppointmentCard extends StatelessWidget {
@@ -57,7 +58,7 @@ class userAppointmentCard extends StatelessWidget {
                       size: 40,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,10 +85,7 @@ class userAppointmentCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
                       color: showUpcoming
                           ? Colors.green.shade50
@@ -105,20 +103,15 @@ class userAppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 14),
-
-              ///STATUS
+              SizedBox(height: 14),
               if (appt['status'] == 'cancelled')
-                _statusBox(Colors.red, Icons.cancel, "Cancelled by admin"),
-
+                _statusBox(Colors.red, Icons.cancel, "Cancelled"),
               if (appt['status'] == 'confirmed')
                 _statusBox(
                   Colors.green,
                   Icons.check_circle,
                   "Appointment confirmed",
                 ),
-
               if (appt['status'] == 'pending')
                 _statusBox(
                   Colors.orange,
@@ -135,20 +128,73 @@ class userAppointmentCard extends StatelessWidget {
               ),
 
               SizedBox(height: 14),
-              if (showUpcoming)
+
+              if (showUpcoming && appt['status'] != 'cancelled')
                 Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final controller = TextEditingController();
+
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              title: Text("Cancel Appointment"),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text("Please provide a reason"),
+                                  SizedBox(height: 10),
+                                  TextField(
+                                    controller: controller,
+                                    decoration: InputDecoration(
+                                      hintText: "Enter reason",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    maxLines: 2,
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: Text("No"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (controller.text.trim().isEmpty) return;
+                                    Navigator.pop(context, true);
+                                  },
+                                  child: Text(
+                                    "Yes",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+
+                          if (confirm == true && context.mounted) {
+                            final vm = context.read<AppointmentViewModel>();
+
+                            final id = appt['id'];
+                            if (id != null) {
+                              await vm.cancelBooking(
+                                id,
+                                controller.text.trim(),
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Appointment cancelled"),
+                                ),
+                              );
+                            }
+                          }
+                        },
                         child: Text("Cancel"),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text("Reschedule"),
                       ),
                     ),
                   ],
