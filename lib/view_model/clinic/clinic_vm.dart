@@ -8,22 +8,52 @@ class ClinicProvider extends ChangeNotifier {
   String? clinicId;
   bool isLoading = true;
 
+  /// 🔥 Call this after login
   Future<void> loadClinic() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final user = FirebaseAuth.instance.currentUser;
 
-    if (uid == null) {
+    if (user == null) {
       isLoading = false;
       notifyListeners();
       return;
     }
 
-    final snapshot = await _db
-        .collection('clinics')
-        .where('adminId', isEqualTo: uid)
-        .get();
+    try {
+      /// 🧠 STEP 1: Check if ADMIN
+      final adminSnap = await _db
+          .collection('clinics')
+          .where('adminId', isEqualTo: user.uid)
+          .limit(1)
+          .get();
 
-    if (snapshot.docs.isNotEmpty) {
-      clinicId = snapshot.docs.first.id;
+      if (adminSnap.docs.isNotEmpty) {
+        clinicId = adminSnap.docs.first.id;
+
+        debugPrint("👨‍⚕️ Admin clinicId: $clinicId");
+
+        isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      /// 🧠 STEP 2: Otherwise check PATIENT
+      final userSnap = await _db
+          .collectionGroup('users')
+          .where(FieldPath.documentId, isEqualTo: user.uid)
+          .limit(1)
+          .get();
+
+      if (userSnap.docs.isNotEmpty) {
+        final data = userSnap.docs.first.data();
+
+        clinicId = data['clinicId'];
+
+        debugPrint("👤 Patient clinicId: $clinicId");
+      } else {
+        debugPrint("❌ No clinic found for this user");
+      }
+    } catch (e) {
+      debugPrint("🔥 Error loading clinic: $e");
     }
 
     isLoading = false;

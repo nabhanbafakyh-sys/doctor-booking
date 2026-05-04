@@ -14,6 +14,7 @@ class AppointmentViewModel extends ChangeNotifier {
   List<Map<String, dynamic>> appointments = [];
   bool isLoading = true;
   bool showUpcoming = true;
+  bool isCancelling = false;
 
   void _init() {
     if (clinicProvider.clinicId != null) {
@@ -34,6 +35,20 @@ class AppointmentViewModel extends ChangeNotifier {
     final user = FirebaseAuth.instance.currentUser;
     final cid = clinicProvider.clinicId;
     if (user == null || cid == null) return;
+
+    _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('appointments')
+        .where('userId', isEqualTo: user.uid)
+        .snapshots()
+        .listen((snap) {
+          appointments = snap.docs
+              .map((e) => {'id': e.id, ...e.data()})
+              .toList();
+          isLoading = false;
+          notifyListeners();
+        });
   }
 
   void toggleTab(bool upcoming) {
@@ -48,5 +63,32 @@ class AppointmentViewModel extends ChangeNotifier {
       if (date == null) return false;
       return showUpcoming ? date.isAfter(now) : date.isBefore(now);
     }).toList();
+  }
+
+  Future<void> cancelBooking(String appointmentId, String reason) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final cid = clinicProvider.clinicId;
+    if (user == null || cid == null) return;
+
+    try {
+      isCancelling = true;
+      notifyListeners();
+
+      await _db
+          .collection('clinics')
+          .doc(cid)
+          .collection('appointments')
+          .doc(appointmentId)
+          .update({
+            'status': 'cancelled',
+            'cancelReason': reason,
+            'cancelledBy': 'user',
+          });
+    } catch (e) {
+      debugPrint("Cancel error: $e");
+    }
+
+    isCancelling = false;
+    notifyListeners();
   }
 }

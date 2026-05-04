@@ -3,9 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
+import 'package:room_rental/view/admin/createclinic/create_clinic.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
 import 'package:room_rental/view_model/role/role.dart';
-import 'package:room_rental/widgets/textform_feild.dart';
 
 class SigninPage extends StatefulWidget {
   const SigninPage({super.key});
@@ -15,16 +15,38 @@ class SigninPage extends StatefulWidget {
 }
 
 class _SigninPageState extends State<SigninPage> {
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  final TextEditingController username = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  final email = TextEditingController();
+  final password = TextEditingController();
+  final username = TextEditingController();
+  final phoneController = TextEditingController();
+
+  List<Map<String, dynamic>> clinics = [];
+  String? selectedClinicId;
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    loadClinics();
+  }
+
+  Future<void> loadClinics() async {
+    final snap = await FirebaseFirestore.instance.collection('clinics').get();
+
+    clinics = snap.docs.map((e) {
+      return {'id': e.id, 'name': e['name']};
+    }).toList();
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    // final roleVM = context.watch<RoleViewModel>();
+    final role = context.watch<RoleViewModel>().selectedRole;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
           Positioned(
@@ -42,168 +64,265 @@ class _SigninPageState extends State<SigninPage> {
               ),
             ),
           ),
+
           SafeArea(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    SizedBox(height: 100),
-                    Text(
-                      'Create account',
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      'Sign up and improve your health today.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 15, color: Colors.black),
-                    ),
-                    SizedBox(height: 40),
-                    Customtextfield(
-                      label: 'Username',
-                      hintText: 'username',
-                      prefixicon: Icons.person,
-                      controller: username,
-                    ),
-                    SizedBox(height: 15),
-                    Customtextfield(
-                      hintText: 'Email',
-                      controller: email,
-                      label: "Email Id",
-                      prefixicon: Icons.mail_outline_rounded,
-                    ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
 
-                    SizedBox(height: 15),
-                    Customtextfield(
-                      label: "Password",
-                      hintText: 'Enter password',
-                      prefixicon: Icons.lock_outline_sharp,
-                      controller: password,
+                  const Text(
+                    "Create Account",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    SizedBox(height: 15),
-                    Customtextfield(
-                      label: 'Phone number',
-                      hintText: 'number',
-                      prefixicon: Icons.call,
-                      controller: phoneController,
-                    ),
-                    SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          final role = context
-                              .read<RoleViewModel>()
-                              .selectedRole;
-                          if (role == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Please select a role"),
-                              ),
-                            );
-                            return;
-                          }
-                          final cred = await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                email: email.text.trim(),
-                                password: password.text.trim(),
-                              );
+                  ),
 
-                          final user = cred.user;
-                          await FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(user!.uid)
-                              .set({
-                                'name': username.text.trim(),
-                                'email': user.email,
-                                'phone': phoneController.text.trim(),
-                                'role': role,
-                                'image': "",
-                                'createdAt': FieldValue.serverTimestamp(),
-                              });
-                          if (!context.mounted) return;
-                          if (role == "admin") {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AdminBottomBar(),
-                              ),
-                            );
-                          } else {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const UserBottomNav(),
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          debugPrint("Signup error: $e");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Signup failed: $e")),
-                          );
-                        }
-                      },
-                      child: const Text("signin "),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Expanded(child: Divider(thickness: 1)),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                        Expanded(child: Divider(thickness: 1)),
+                  const SizedBox(height: 90),
+
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [
+                        BoxShadow(blurRadius: 10, color: Colors.black12),
                       ],
                     ),
-                    Text(
-                      'Sign up with',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
                       children: [
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              Image.asset('assets/google.png'),
-                              Text(
-                                '  Google',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
+                        _field(username, "Username", Icons.person),
+                        _gap(),
+                        _field(email, "Email", Icons.email),
+                        _gap(),
+                        _field(
+                          password,
+                          "Password",
+                          Icons.lock,
+                          isPassword: true,
                         ),
-                        SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              Image.asset('assets/facebook.png'),
-                              Text(
-                                'facebook',
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                        _gap(),
+                        _field(phoneController, "Phone", Icons.phone),
+                        _gap(),
+
+                        if (role == "patient")
+                          GestureDetector(
+                            onTap: () => _showClinicBottomSheet(),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
                               ),
-                            ],
+                              decoration: BoxDecoration(
+                                color: Colors.grey[100],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.local_hospital,
+                                    color: Colors.grey,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      selectedClinicId == null
+                                          ? "Select Clinic"
+                                          : clinics.firstWhere(
+                                              (c) =>
+                                                  c['id'] == selectedClinicId,
+                                            )['name'],
+                                      style: TextStyle(
+                                        color: selectedClinicId == null
+                                            ? Colors.grey
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(Icons.arrow_drop_down),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 25),
+
+                        /// 🔥 BUTTON
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6A8DFF),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    if (role == null) {
+                                      showMsg("Select role");
+                                      return;
+                                    }
+
+                                    if (username.text.isEmpty ||
+                                        email.text.isEmpty ||
+                                        password.text.isEmpty) {
+                                      showMsg("Fill all fields");
+                                      return;
+                                    }
+
+                                    if (role == "patient" &&
+                                        selectedClinicId == null) {
+                                      showMsg("Select clinic");
+                                      return;
+                                    }
+
+                                    try {
+                                      setState(() => isLoading = true);
+
+                                      final cred = await FirebaseAuth.instance
+                                          .createUserWithEmailAndPassword(
+                                            email: email.text.trim(),
+                                            password: password.text.trim(),
+                                          );
+
+                                      final user = cred.user;
+
+                                      /// ADMIN
+                                      if (role == "admin") {
+                                        final existing = await FirebaseFirestore
+                                            .instance
+                                            .collection('clinics')
+                                            .where(
+                                              'adminId',
+                                              isEqualTo: user!.uid,
+                                            )
+                                            .get();
+
+                                        if (existing.docs.isNotEmpty) {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const AdminBottomBar(),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  const CreateClinicScreen(),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                      /// USER
+                                      else {
+                                        await FirebaseFirestore.instance
+                                            .collection('clinics')
+                                            .doc(selectedClinicId)
+                                            .collection('users')
+                                            .doc(user!.uid)
+                                            .set({
+                                              'name': username.text.trim(),
+                                              'email': user.email,
+                                              'phone': phoneController.text
+                                                  .trim(),
+                                              'role': 'patient',
+                                              'clinicId': selectedClinicId,
+                                            });
+
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const UserBottomNav(),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      showMsg("Signup failed: $e");
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => isLoading = false);
+                                      }
+                                    }
+                                  },
+                            child: isLoading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text("Sign Up"),
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  /// 🔥 INPUT FIELD
+  Widget _field(
+    TextEditingController controller,
+    String label,
+    IconData icon, {
+    bool isPassword = false,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isPassword,
+      decoration: InputDecoration(
+        prefixIcon: Icon(icon),
+        labelText: label,
+        filled: true,
+        fillColor: Colors.grey[100],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _gap() => const SizedBox(height: 15);
+
+  /// 🔥 BOTTOM SHEET DROPDOWN
+  void _showClinicBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return ListView(
+          children: clinics.map((c) {
+            return ListTile(
+              title: Text(c['name']),
+              onTap: () {
+                setState(() {
+                  selectedClinicId = c['id'];
+                });
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  void showMsg(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

@@ -89,6 +89,7 @@ class AdminInfo extends StatelessWidget {
                           context,
                           MaterialPageRoute(builder: (_) => EditAdmin()),
                         );
+                        if (!context.mounted) return;
                         context.read<ProfileVM>().loadUser();
                       },
                     ),

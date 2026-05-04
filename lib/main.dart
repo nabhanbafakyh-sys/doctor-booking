@@ -38,43 +38,46 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<ClinicProvider, AdminHomeViewModel>(
           create: (context) =>
               AdminHomeViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => AdminHomeViewModel(clinic),
+          update: (_, clinic, _) => AdminHomeViewModel(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, DoctorViewModel>(
           create: (context) => DoctorViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => DoctorViewModel(clinic),
+          update: (_, clinic, _) => DoctorViewModel(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, AdminDashboardViewModel>(
           create: (context) =>
               AdminDashboardViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => AdminDashboardViewModel(clinic),
+          update: (_, clinic, _) => AdminDashboardViewModel(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, AdminProfileVm>(
           create: (context) => AdminProfileVm(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => AdminProfileVm(clinic),
+          update: (_, clinic, _) => AdminProfileVm(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, AppointmentViewModel>(
           create: (context) =>
               AppointmentViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => AppointmentViewModel(clinic),
+          update: (_, clinic, _) => AppointmentViewModel(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, BookingVM>(
           create: (context) => BookingVM(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => BookingVM(clinic),
+          update: (_, clinic, _) => BookingVM(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, UserHomeViewModel>(
-          create: (context) =>
-              UserHomeViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => UserHomeViewModel(clinic),
+          create: (context) {
+            final vm = UserHomeViewModel(context.read<ClinicProvider>());
+            vm.init();
+            return vm;
+          },
+          update: (_, clinic, previous) => previous!, // never recreate
         ),
         ChangeNotifierProxyProvider<ClinicProvider, MyDoctorsViewModel>(
           create: (context) =>
               MyDoctorsViewModel(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => MyDoctorsViewModel(clinic),
+          update: (_, clinic, _) => MyDoctorsViewModel(clinic),
         ),
         ChangeNotifierProxyProvider<ClinicProvider, ProfileVM>(
           create: (context) => ProfileVM(context.read<ClinicProvider>()),
-          update: (_, clinic, __) => ProfileVM(clinic),
+          update: (_, clinic, _) => ProfileVM(clinic),
         ),
       ],
       child: MaterialApp(

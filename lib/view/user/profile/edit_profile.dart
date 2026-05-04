@@ -38,6 +38,7 @@ class EditProfilePage extends StatelessWidget {
                   ? null
                   : () async {
                       await vm.updateProfile();
+                      if (!context.mounted) return;
                       Navigator.pop(context);
                     },
               child: vm.isLoading

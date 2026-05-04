@@ -50,14 +50,14 @@ Widget buildRoleCard(
               ],
             ),
           ),
-          Radio<String>(
-            value: role,
+          RadioGroup<String>(
+            groupValue: context.watch<RoleViewModel>().selectedRole,
             onChanged: (value) {
               if (value != null) {
                 context.read<RoleViewModel>().selectRole(value);
               }
             },
-            activeColor: Colors.blue,
+            child: Column(children: [Radio(value: "admin")]),
           ),
         ],
       ),

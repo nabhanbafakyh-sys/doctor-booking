@@ -37,7 +37,7 @@ class userAppointmentCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 14,
                 offset: const Offset(0, 8),
               ),
@@ -58,7 +58,7 @@ class userAppointmentCard extends StatelessWidget {
                       size: 40,
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +85,10 @@ class userAppointmentCard extends StatelessWidget {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: showUpcoming
                           ? Colors.green.shade50
@@ -103,7 +106,10 @@ class userAppointmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 14),
+
+              const SizedBox(height: 14),
+
+              /// STATUS
               if (appt['status'] == 'cancelled')
                 _statusBox(Colors.red, Icons.cancel, "Cancelled"),
               if (appt['status'] == 'confirmed')
@@ -118,83 +124,140 @@ class userAppointmentCard extends StatelessWidget {
                   Icons.hourglass_top,
                   "Waiting for approval",
                 ),
-              SizedBox(height: 20),
+              if (appt['status'] == 'cancelled' && appt['cancelReason'] != null)
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        appt['cancelledBy'] == 'admin'
+                            ? "Cancelled by Clinic"
+                            : "You cancelled this",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        appt['cancelReason'],
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 20),
+
+              /// DATE & TIME
               Row(
                 children: [
                   Expanded(child: infoBox(Icons.calendar_today, date)),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(child: infoBox(Icons.access_time, time)),
                 ],
               ),
 
-              SizedBox(height: 14),
+              const SizedBox(height: 14),
 
+              /// CANCEL BUTTON
               if (showUpcoming && appt['status'] != 'cancelled')
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
-                        onPressed: () async {
-                          final controller = TextEditingController();
+                      child: Consumer<AppointmentViewModel>(
+                        builder: (context, vm, _) {
+                          return OutlinedButton(
+                            onPressed: vm.isCancelling
+                                ? null
+                                : () async {
+                                    final controller = TextEditingController();
 
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: Text("Cancel Appointment"),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text("Please provide a reason"),
-                                  SizedBox(height: 10),
-                                  TextField(
-                                    controller: controller,
-                                    decoration: InputDecoration(
-                                      hintText: "Enter reason",
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    maxLines: 2,
-                                  ),
-                                ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, false),
-                                  child: Text("No"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    if (controller.text.trim().isEmpty) return;
-                                    Navigator.pop(context, true);
+                                    final confirm = await showDialog<bool>(
+                                      context: context,
+                                      builder: (_) => AlertDialog(
+                                        title: const Text("Cancel Appointment"),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                              "Please provide a reason",
+                                            ),
+                                            const SizedBox(height: 10),
+                                            TextField(
+                                              controller: controller,
+                                              decoration: const InputDecoration(
+                                                hintText: "Enter reason",
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              maxLines: 2,
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context, false),
+                                            child: const Text("No"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              if (controller.text
+                                                  .trim()
+                                                  .isEmpty) {
+                                                return;
+                                              }
+                                              Navigator.pop(context, true);
+                                            },
+                                            child: const Text(
+                                              "Yes",
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (confirm == true && context.mounted) {
+                                      final id = appt['id'];
+                                      if (id != null) {
+                                        await vm.cancelBooking(
+                                          id,
+                                          controller.text.trim(),
+                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                "Appointment cancelled",
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }
                                   },
-                                  child: Text(
-                                    "Yes",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            child: vm.isCancelling
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text("Cancel"),
                           );
-
-                          if (confirm == true && context.mounted) {
-                            final vm = context.read<AppointmentViewModel>();
-
-                            final id = appt['id'];
-                            if (id != null) {
-                              await vm.cancelBooking(
-                                id,
-                                controller.text.trim(),
-                              );
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("Appointment cancelled"),
-                                ),
-                              );
-                            }
-                          }
                         },
-                        child: Text("Cancel"),
                       ),
                     ),
                   ],
@@ -212,13 +275,13 @@ class userAppointmentCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 10),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
           Icon(icon, color: color, size: 18),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(text, style: TextStyle(color: color)),
         ],
       ),

@@ -19,7 +19,7 @@ class PersonalInfoPage extends StatelessWidget {
       ),
       body: Selector<ProfileVM, bool>(
         selector: (_, vm) => vm.isLoading,
-        builder: (_, isLoading, __) {
+        builder: (_, isLoading, _) {
           if (isLoading) {
             return const Center(child: CircularProgressIndicator());
           }

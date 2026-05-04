@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,48 +13,62 @@ class UserHomeViewModel extends ChangeNotifier {
 
   List<DoctorModel> doctors = [];
   List<DoctorModel> filteredDoctors = [];
-
   String userName = "";
   bool isLoading = true;
 
-  void init() {
-    if (clinicProvider.clinicId != null) {
-      _loadAll();
-    } else {
-      clinicProvider.addListener(_onClinicReady);
-    }
-  }
-
-  void _onClinicReady() {
-    if (clinicProvider.clinicId != null) {
-      clinicProvider.removeListener(_onClinicReady);
-      _loadAll();
-    }
-  }
+  StreamSubscription? _doctorsSubscription;
 
   void _loadAll() {
     fetchDoctors();
     fetchUser();
   }
 
+  void init() {
+    debugPrint("init() called — clinicId: ${clinicProvider.clinicId}");
+    if (clinicProvider.clinicId != null) {
+      _loadAll();
+    } else {
+      debugPrint("clinicId is null, adding listener...");
+      clinicProvider.addListener(_onClinicReady);
+    }
+  }
+
+  void _onClinicReady() {
+    debugPrint("_onClinicReady fired — clinicId: ${clinicProvider.clinicId}");
+    if (clinicProvider.clinicId != null) {
+      clinicProvider.removeListener(_onClinicReady);
+      _loadAll();
+    }
+  }
+
   void fetchDoctors() {
     final cid = clinicProvider.clinicId!;
-    _db.collection('clinics').doc(cid).collection('doctors').snapshots().listen(
-      (snap) {
-        doctors = snap.docs
-            .map((e) => DoctorModel.fromFirestore(e.data(), e.id))
-            .toList();
+    debugPrint("fetchDoctors() — fetching from clinics/$cid/doctors");
 
-        filteredDoctors = doctors;
-        notifyListeners();
-      },
-    );
+    _doctorsSubscription?.cancel();
+    _doctorsSubscription = _db
+        .collection('clinics')
+        .doc(cid)
+        .collection('doctors')
+        .snapshots()
+        .listen(
+          (snap) {
+            debugPrint("Snapshot received — ${snap.docs.length} doctors");
+            doctors = snap.docs
+                .map((e) => DoctorModel.fromFirestore(e.data(), e.id))
+                .toList();
+            filteredDoctors = doctors;
+            notifyListeners();
+          },
+          onError: (e) {
+            debugPrint("Firestore error: $e");
+          },
+        );
   }
 
   Future<void> fetchUser() async {
     final user = FirebaseAuth.instance.currentUser;
     final cid = clinicProvider.clinicId;
-
     if (user == null || cid == null) return;
 
     final doc = await _db
@@ -64,26 +79,38 @@ class UserHomeViewModel extends ChangeNotifier {
         .get();
 
     if (doc.exists) {
-      final data = doc.data()!;
-      userName = data['name'] ?? "";
+      userName = doc.data()?['name'] ?? "";
     }
 
     isLoading = false;
     notifyListeners();
   }
 
-  void search(String query) {
-    if (query.isEmpty) {
-      filteredDoctors = doctors;
-    } else {
-      filteredDoctors = doctors
-          .where(
-            (d) =>
-                d.name.toLowerCase().contains(query.toLowerCase()) ||
-                d.specialization.toLowerCase().contains(query.toLowerCase()),
-          )
-          .toList();
+  void updateClinic(ClinicProvider newClinic) {
+    if (newClinic.clinicId != clinicProvider.clinicId) {
+      _loadAll();
     }
+  }
+
+  void search(String query) {
+    filteredDoctors = query.isEmpty
+        ? doctors
+        : doctors
+              .where(
+                (d) =>
+                    d.name.toLowerCase().contains(query.toLowerCase()) ||
+                    d.specialization.toLowerCase().contains(
+                      query.toLowerCase(),
+                    ),
+              )
+              .toList();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _doctorsSubscription?.cancel();
+    clinicProvider.removeListener(_onClinicReady);
+    super.dispose();
   }
 }

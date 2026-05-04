@@ -38,7 +38,7 @@ class AdminDashboardViewModel extends ChangeNotifier {
     _subscription = _firestore
         .collection('clinics')
         .doc(cid)
-        .collection('appointments') // ✅ FIXED
+        .collection('appointments')
         .orderBy('createdAt', descending: true)
         .snapshots()
         .listen(
@@ -94,7 +94,7 @@ class AdminDashboardViewModel extends ChangeNotifier {
         .update({'status': 'confirmed'});
   }
 
-  Future<void> cancel(String id) async {
+  Future<void> cancel(String id, String reason) async {
     final cid = clinicProvider.clinicId;
     if (cid == null) return;
 
@@ -103,7 +103,11 @@ class AdminDashboardViewModel extends ChangeNotifier {
         .doc(cid)
         .collection('appointments')
         .doc(id)
-        .update({'status': 'cancelled'});
+        .update({
+          'status': 'cancelled',
+          'cancelReason': reason,
+          'cancelledBy': 'admin',
+        });
   }
 
   @override
