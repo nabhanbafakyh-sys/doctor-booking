@@ -14,19 +14,20 @@ class Loginscren extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final roleVM = context.watch<RoleViewModel>();
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+
       body: Stack(
         children: [
+          /// 🔵 TOP GRADIENT
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: Container(
               height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [Color(0xFF6A8DFF), Colors.transparent],
                   begin: Alignment.topCenter,
@@ -36,71 +37,114 @@ class Loginscren extends StatelessWidget {
             ),
           ),
 
+          /// 🔽 BODY
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
+
                     Image.network(
                       "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
                       height: 110,
                     ),
-                    Text(
+
+                    const Text(
                       'Welcome Back',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Text(
-                      'Access your personalized health\n dashboard and health records.',
+
+                    const Text(
+                      'Access your health dashboard',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 15),
                     ),
-                    SizedBox(height: 40),
+
+                    const SizedBox(height: 40),
+
+                    /// 📧 EMAIL
                     Customtextfield(
                       hintText: 'Email',
                       controller: email,
                       label: "Email Id",
                       prefixicon: Icons.mail_outline_rounded,
                     ),
-                    SizedBox(height: 15),
+
+                    const SizedBox(height: 15),
+
+                    /// 🔒 PASSWORD
                     Customtextfield(
                       hintText: 'Password',
                       controller: password,
                       label: "Password",
                       prefixicon: Icons.lock_outline_sharp,
                     ),
-                    SizedBox(height: 30),
+
+                    const SizedBox(height: 30),
+
+                    /// 🔥 LOGIN BUTTON
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
+
                       onPressed: () async {
                         try {
+                          /// 🔐 STEP 1: LOGIN
                           final cred = await FirebaseAuth.instance
                               .signInWithEmailAndPassword(
                                 email: email.text.trim(),
                                 password: password.text.trim(),
                               );
-                          final user = cred.user;
-                          final doc = await FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(user!.uid)
-                              .get();
 
-                          if (!doc.exists) {
-                            throw Exception("User data not found");
+                          final user = cred.user;
+                          if (user == null) throw Exception("User not found");
+
+                          final db = FirebaseFirestore.instance;
+
+                          /// 📄 STEP 2: GET USER DOC
+                          final userRef = db.collection('users').doc(user.uid);
+                          final userDoc = await userRef.get();
+
+                          /// 🧠 STEP 3: CREATE USER DOC IF MISSING (IMPORTANT FIX)
+                          if (!userDoc.exists) {
+                            debugPrint("⚠️ User doc missing → creating...");
+
+                            await userRef.set({
+                              'email': user.email,
+                              'role': 'patient', // default role
+                              'clinicId': null,
+                              'createdAt': Timestamp.now(),
+                            });
+
+                            throw Exception(
+                              "User profile created. Please login again.",
+                            );
                           }
-                          final role = doc['role'];
-                          debugPrint("Logged in as: $role");
+
+                          final data = userDoc.data()!;
+                          final role = data['role'];
+                          final clinicId = data['clinicId'];
+
+                          debugPrint("✅ Role: $role");
+                          debugPrint("✅ ClinicId: $clinicId");
+
+                          /// 🚨 STEP 4: VALIDATION
+                          if (clinicId == null) {
+                            throw Exception("No clinic assigned");
+                          }
+
                           if (!context.mounted) return;
+
+                          /// 🚀 STEP 5: NAVIGATION
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,
@@ -112,67 +156,57 @@ class Loginscren extends StatelessWidget {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => UserBottomNav(),
+                                builder: (_) => const UserBottomNav(),
                               ),
                             );
                           }
                         } catch (e) {
-                          debugPrint("Login error: $e");
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Login failed: $e")),
-                          );
+                          debugPrint("❌ Login error: $e");
+
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       },
-                      child: Text(
+
+                      child: const Text(
                         "LOGIN",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    SizedBox(height: 10),
+
+                    const SizedBox(height: 10),
+
                     Row(
-                      children: [
-                        Expanded(child: Divider(thickness: 1)),
+                      children: const [
+                        Expanded(child: Divider()),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('OR'),
                         ),
-                        Expanded(child: Divider(thickness: 1)),
+                        Expanded(child: Divider()),
                       ],
                     ),
-                    SizedBox(height: 10),
+
+                    const SizedBox(height: 10),
+
+                    /// 🔽 SIGNUP NAV
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: TextStyle(fontSize: 15),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(0.0),
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SigninPage(),
-                                ),
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size(0, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: Text(
-                              'Create account',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
+                        const Text("Don't have an account? "),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const SigninPage(),
                               ),
-                            ),
+                            );
+                          },
+                          child: const Text(
+                            'Create account',
+                            style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
                       ],

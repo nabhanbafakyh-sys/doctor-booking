@@ -8,7 +8,6 @@ class ClinicProvider extends ChangeNotifier {
   String? clinicId;
   bool isLoading = true;
 
-  /// 🔥 Call this after login
   Future<void> loadClinic() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -18,45 +17,41 @@ class ClinicProvider extends ChangeNotifier {
       return;
     }
 
-    try {
-      /// 🧠 STEP 1: Check if ADMIN
-      final adminSnap = await _db
-          .collection('clinics')
-          .where('adminId', isEqualTo: user.uid)
-          .limit(1)
-          .get();
+    /// 🔥 STEP 1: check if ADMIN
+    final adminSnap = await _db
+        .collection('clinics')
+        .where('adminId', isEqualTo: user.uid)
+        .get();
 
-      if (adminSnap.docs.isNotEmpty) {
-        clinicId = adminSnap.docs.first.id;
+    if (adminSnap.docs.isNotEmpty) {
+      clinicId = adminSnap.docs.first.id;
+    } else {
+      /// 🔥 STEP 2: check inside users (for patient)
+      final clinicsSnap = await _db.collection('clinics').get();
 
-        debugPrint("👨‍⚕️ Admin clinicId: $clinicId");
+      for (var clinic in clinicsSnap.docs) {
+        final userDoc = await _db
+            .collection('clinics')
+            .doc(clinic.id)
+            .collection('users')
+            .doc(user.uid)
+            .get();
 
-        isLoading = false;
-        notifyListeners();
-        return;
+        if (userDoc.exists) {
+          clinicId = clinic.id;
+          break;
+        }
       }
-
-      /// 🧠 STEP 2: Otherwise check PATIENT
-      final userSnap = await _db
-          .collectionGroup('users')
-          .where(FieldPath.documentId, isEqualTo: user.uid)
-          .limit(1)
-          .get();
-
-      if (userSnap.docs.isNotEmpty) {
-        final data = userSnap.docs.first.data();
-
-        clinicId = data['clinicId'];
-
-        debugPrint("👤 Patient clinicId: $clinicId");
-      } else {
-        debugPrint("❌ No clinic found for this user");
-      }
-    } catch (e) {
-      debugPrint("🔥 Error loading clinic: $e");
     }
 
+    debugPrint("🔥 Loaded clinicId: $clinicId");
+
     isLoading = false;
+    notifyListeners();
+  }
+
+  void setClinic(String id) {
+    clinicId = id;
     notifyListeners();
   }
 }

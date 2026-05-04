@@ -195,7 +195,6 @@ class _SigninPageState extends State<SigninPage> {
 
                                       final user = cred.user;
 
-                                      /// ADMIN
                                       if (role == "admin") {
                                         final existing = await FirebaseFirestore
                                             .instance
@@ -207,6 +206,20 @@ class _SigninPageState extends State<SigninPage> {
                                             .get();
 
                                         if (existing.docs.isNotEmpty) {
+                                          final clinicId =
+                                              existing.docs.first.id;
+
+                                          /// 🔥 SAVE GLOBAL ADMIN
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(user.uid)
+                                              .set({
+                                                'name': username.text.trim(),
+                                                'email': user.email,
+                                                'role': 'admin',
+                                                'clinicId': clinicId,
+                                              });
+
                                           Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
@@ -225,12 +238,30 @@ class _SigninPageState extends State<SigninPage> {
                                         }
                                       }
                                       /// USER
+                                      /// USER (PATIENT)
                                       else {
+                                        final uid = user!.uid;
+
+                                        /// ✅ SAVE IN GLOBAL USERS
+                                        await FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(uid)
+                                            .set({
+                                              'name': username.text.trim(),
+                                              'email': user.email,
+                                              'phone': phoneController.text
+                                                  .trim(),
+                                              'role': 'patient',
+                                              'clinicId': selectedClinicId,
+                                              'createdAt': Timestamp.now(),
+                                            });
+
+                                        /// ✅ SAVE IN CLINIC USERS
                                         await FirebaseFirestore.instance
                                             .collection('clinics')
                                             .doc(selectedClinicId)
                                             .collection('users')
-                                            .doc(user!.uid)
+                                            .doc(uid)
                                             .set({
                                               'name': username.text.trim(),
                                               'email': user.email,
@@ -275,7 +306,6 @@ class _SigninPageState extends State<SigninPage> {
     );
   }
 
-  /// 🔥 INPUT FIELD
   Widget _field(
     TextEditingController controller,
     String label,
@@ -300,7 +330,6 @@ class _SigninPageState extends State<SigninPage> {
 
   Widget _gap() => const SizedBox(height: 15);
 
-  /// 🔥 BOTTOM SHEET DROPDOWN
   void _showClinicBottomSheet() {
     showModalBottomSheet(
       context: context,

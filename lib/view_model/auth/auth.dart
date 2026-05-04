@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -11,7 +13,6 @@ class AuthViewModel extends ChangeNotifier {
   bool isLoading = false;
   String? error;
 
-  /// 🔐 LOGIN
   Future<bool> signIn(String email, String password) async {
     try {
       isLoading = true;
@@ -35,7 +36,6 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// 🌍 GLOBAL USER
   Future<void> _ensureGlobalUser(User? user) async {
     if (user == null) return;
 
@@ -43,12 +43,21 @@ class AuthViewModel extends ChangeNotifier {
     final doc = await ref.get();
 
     if (!doc.exists) {
-      await ref.set({'email': user.email, 'createdAt': Timestamp.now()});
+      await ref.set({
+        'email': user.email,
+        'name': user.email?.split('@')[0] ?? '',
+        'role': 'patient', // default
+        'clinicId': null, // will be updated later
+        'createdAt': Timestamp.now(),
+      });
     }
   }
 
-  /// 🏥 CREATE CLINIC (ADMIN)
-  Future<String?> createClinic(String clinicName) async {
+  Future<String?> createClinicWithDetails({
+    required String name,
+    required String address,
+    required String phone,
+  }) async {
     try {
       isLoading = true;
       notifyListeners();
@@ -57,27 +66,22 @@ class AuthViewModel extends ChangeNotifier {
       if (user == null) return null;
 
       final ref = await _db.collection('clinics').add({
-        'name': clinicName,
+        'name': name,
+        'address': address,
+        'phone': phone,
         'adminId': user.uid,
         'createdAt': Timestamp.now(),
       });
-
-      /// Add admin to clinic users
-      await _db
-          .collection('clinics')
-          .doc(ref.id)
-          .collection('users')
-          .doc(user.uid)
-          .set({
-            'name': user.email?.split('@')[0] ?? '',
-            'email': user.email,
-            'role': 'admin',
-            'clinicId': ref.id,
-          });
+      await _db.collection('users').doc(user.uid).set({
+        'email': user.email,
+        'name': user.email,
+        'role': 'admin',
+        'clinicId': ref.id,
+      }, SetOptions(merge: true));
 
       return ref.id;
     } catch (e) {
-      error = e.toString();
+      debugPrint("Create clinic error: $e");
       return null;
     } finally {
       isLoading = false;
@@ -85,21 +89,21 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  /// 👤 ATTACH USER TO CLINIC
   Future<void> attachUserToClinic(String clinicId) async {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    final ref = _db
+    /// 🔹 clinic subcollection
+    final clinicRef = _db
         .collection('clinics')
         .doc(clinicId)
         .collection('users')
         .doc(user.uid);
 
-    final doc = await ref.get();
+    final doc = await clinicRef.get();
 
     if (!doc.exists) {
-      await ref.set({
+      await clinicRef.set({
         'name': user.email?.split('@')[0] ?? '',
         'email': user.email,
         'phone': '',
@@ -108,9 +112,11 @@ class AuthViewModel extends ChangeNotifier {
         'createdAt': Timestamp.now(),
       });
     }
+
+    /// 🔥 GLOBAL USER UPDATE (THIS FIXES YOUR ERROR)
+    await _db.collection('users').doc(user.uid).update({'clinicId': clinicId});
   }
 
-  /// 🔍 GET ROLE
   Future<String?> getRole(String clinicId) async {
     final user = _auth.currentUser;
     if (user == null) return null;
@@ -129,7 +135,6 @@ class AuthViewModel extends ChangeNotifier {
     return null;
   }
 
-  /// 🔎 CHECK IF ADMIN HAS CLINIC
   Future<bool> hasClinic() async {
     final user = _auth.currentUser;
     if (user == null) return false;
@@ -152,5 +157,32 @@ class AuthViewModel extends ChangeNotifier {
       MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
       (route) => false,
     );
+  }
+
+  Future<String?> handleUser(BuildContext context) async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+
+    /// 🔥 STEP 1: Get global user
+    final globalDoc = await _db.collection('users').doc(user.uid).get();
+
+    if (!globalDoc.exists) {
+      throw Exception("User data not found");
+    }
+
+    final data = globalDoc.data()!;
+    final clinicId = data['clinicId'];
+    final role = data['role'];
+
+    debugPrint("✅ Role: $role");
+    debugPrint("✅ ClinicId: $clinicId");
+
+    if (clinicId == null) {
+      throw Exception("No clinic assigned");
+    }
+
+    context.read<ClinicProvider>().setClinic(clinicId);
+
+    return role;
   }
 }

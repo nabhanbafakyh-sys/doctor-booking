@@ -69,6 +69,10 @@ class UserHomeViewModel extends ChangeNotifier {
   Future<void> fetchUser() async {
     final user = FirebaseAuth.instance.currentUser;
     final cid = clinicProvider.clinicId;
+
+    debugPrint("👤 Logged UID: ${user?.uid}");
+    debugPrint("🏥 Clinic ID used: $cid");
+
     if (user == null || cid == null) return;
 
     final doc = await _db
@@ -77,6 +81,10 @@ class UserHomeViewModel extends ChangeNotifier {
         .collection('users')
         .doc(user.uid)
         .get();
+
+    debugPrint("📄 Doc exists: ${doc.exists}");
+    debugPrint("📄 Doc ID fetched: ${doc.id}");
+    debugPrint("📄 Data: ${doc.data()}");
 
     if (doc.exists) {
       userName = doc.data()?['name'] ?? "";

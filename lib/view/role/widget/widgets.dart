@@ -7,6 +7,7 @@ Widget buildRoleCard(
   required String title,
   required String subtitle,
   required String role,
+  required IconData icon,
 }) {
   final roleVM = context.watch<RoleViewModel>();
   final isSelected = roleVM.selectedRole == role;
@@ -25,39 +26,53 @@ Widget buildRoleCard(
           color: isSelected ? Colors.blue : Colors.grey.shade300,
           width: 2,
         ),
+        boxShadow: [
+          if (isSelected) const BoxShadow(color: Colors.blue, blurRadius: 10),
+        ],
       ),
       child: Row(
         children: [
+          /// ICON BOX
           Container(
-            height: 60,
+            height: 50,
             width: 50,
             decoration: BoxDecoration(
-              color: Color(0xFFE3F2FD),
-              borderRadius: BorderRadius.circular(20),
+              color: const Color(0xFFE3F2FD),
+              borderRadius: BorderRadius.circular(15),
             ),
-            child: Icon(Icons.person, color: Colors.blue),
+            child: Icon(icon, color: Colors.blue),
           ),
-          SizedBox(width: 16),
+
+          const SizedBox(width: 16),
+
+          /// TEXT
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text(subtitle),
+                const SizedBox(height: 4),
+                Text(subtitle, style: const TextStyle(color: Colors.grey)),
               ],
             ),
           ),
-          RadioGroup<String>(
-            groupValue: context.watch<RoleViewModel>().selectedRole,
+
+          /// SINGLE RADIO (CORRECT)
+          Radio<String>(
+            value: role,
+            groupValue: roleVM.selectedRole,
+            activeColor: Colors.blue,
             onChanged: (value) {
               if (value != null) {
                 context.read<RoleViewModel>().selectRole(value);
               }
             },
-            child: Column(children: [Radio(value: "admin")]),
           ),
         ],
       ),

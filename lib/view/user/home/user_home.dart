@@ -45,7 +45,7 @@ class UserHome extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Hello, ${vm.userName} ",
+                  "Hello, ${vm.userName.isEmpty ? "User" : vm.userName} ",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
                 ),
 

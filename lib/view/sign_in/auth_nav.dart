@@ -17,19 +17,14 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder(
       stream: auth.authState,
       builder: (context, snapshot) {
-        /// 🔄 Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-
-        /// ❌ Not logged in
         if (!snapshot.hasData) {
           return Loginscren();
         }
-
-        /// ✅ Logged in → load clinic + role
         return FutureBuilder(
           future: _handleUser(context),
           builder: (context, snap) {
@@ -38,54 +33,35 @@ class AuthGate extends StatelessWidget {
                 body: Center(child: CircularProgressIndicator()),
               );
             }
-
-            final result = snap.data as String?;
-
-            /// 🏥 Admin without clinic
+            final result = snap.data;
             if (result == "create_clinic") {
-              return const CreateClinicScreen();
+              return CreateClinicScreen();
             }
-
-            /// 👨‍⚕️ Admin
             if (result == "admin") {
-              return const AdminBottomBar();
+              return AdminBottomBar();
             }
-
-            /// 👤 User
-            return const UserBottomNav();
+            return UserBottomNav();
           },
         );
       },
     );
   }
 
-  /// 🔥 Main logic
   Future<String?> _handleUser(BuildContext context) async {
     final auth = context.read<AuthViewModel>();
     final clinicVM = context.read<ClinicProvider>();
-
-    /// 1. Load clinic
     await clinicVM.loadClinic();
-
     final clinicId = clinicVM.clinicId;
-
-    /// 2. Check if admin has clinic
     final hasClinic = await auth.hasClinic();
 
     if (!hasClinic) {
       return "create_clinic";
     }
-
     if (clinicId == null) {
       return null;
     }
-
-    /// 3. Attach user (if needed)
     await auth.attachUserToClinic(clinicId);
-
-    /// 4. Get role
     final role = await auth.getRole(clinicId);
-
     return role;
   }
 }

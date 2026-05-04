@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
+import 'package:room_rental/view/admin/createclinic/widget/field.dart';
 import 'package:room_rental/view_model/auth/auth.dart';
 import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
@@ -13,6 +14,8 @@ class CreateClinicScreen extends StatefulWidget {
 
 class _CreateClinicScreenState extends State<CreateClinicScreen> {
   final nameCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -22,25 +25,30 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
       backgroundColor: Colors.grey[100],
       body: Stack(
         children: [
-          /// 🔵 HEADER
-          Container(
-            height: 250,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF6A8DFF), Color(0xFF9FB3FF)],
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF6A8DFF), Colors.transparent],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
           ),
 
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40),
 
-                  /// 🔥 TITLE
-                  const Text(
+                  Text(
                     "Create Clinic",
                     style: TextStyle(
                       fontSize: 26,
@@ -48,48 +56,43 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
                       color: Colors.white,
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  /// 🔥 CARD
+                  SizedBox(height: 20),
                   Container(
-                    width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
+                      boxShadow: [
                         BoxShadow(blurRadius: 10, color: Colors.black12),
                       ],
                     ),
                     child: Column(
                       children: [
-                        /// INPUT
-                        TextField(
-                          controller: nameCtrl,
-                          decoration: InputDecoration(
-                            prefixIcon: const Icon(
-                              Icons.local_hospital_outlined,
-                            ),
-                            labelText: "Clinic Name",
-                            filled: true,
-                            fillColor: Colors.grey[100],
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
+                        field(
+                          nameCtrl,
+                          "Clinic Name",
+                          Icons.local_hospital_outlined,
                         ),
-
-                        const SizedBox(height: 25),
-
-                        /// BUTTON
+                        SizedBox(height: 15),
+                        field(
+                          addressCtrl,
+                          "Address",
+                          Icons.location_on_outlined,
+                        ),
+                        SizedBox(height: 15),
+                        field(
+                          phoneCtrl,
+                          "Phone",
+                          Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        SizedBox(height: 25),
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6A8DFF),
+                              backgroundColor: Color(0xFF6A8DFF),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -97,17 +100,23 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
                             onPressed: vm.isLoading
                                 ? null
                                 : () async {
-                                    if (nameCtrl.text.isEmpty) {
-                                      showMsg("Enter clinic name");
+                                    if (nameCtrl.text.isEmpty ||
+                                        addressCtrl.text.isEmpty ||
+                                        phoneCtrl.text.isEmpty) {
+                                      showMsg("Fill all fields");
                                       return;
                                     }
 
                                     final id = await context
                                         .read<AuthViewModel>()
-                                        .createClinic(nameCtrl.text.trim());
+                                        .createClinicWithDetails(
+                                          name: nameCtrl.text.trim(),
+                                          address: addressCtrl.text.trim(),
+                                          phone: phoneCtrl.text.trim(),
+                                        );
 
                                     if (id == null) {
-                                      showMsg("Failed");
+                                      showMsg("Failed to create clinic");
                                       return;
                                     }
 
