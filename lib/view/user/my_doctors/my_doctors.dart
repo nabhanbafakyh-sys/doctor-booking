@@ -15,14 +15,11 @@ class MyDoctorsPage extends StatelessWidget {
       appBar: AppBar(title: const Text("My Doctors"), centerTitle: true),
       body: Builder(
         builder: (_) {
-          if (vm.isloading) {
-            return const Center(child: CircularProgressIndicator());
-          }
           if (vm.myDoctors.isEmpty) {
             return const Center(
               child: Text(
                 "No bookings yet",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(fontSize: 16, color: Colors.black),
               ),
             );
           }

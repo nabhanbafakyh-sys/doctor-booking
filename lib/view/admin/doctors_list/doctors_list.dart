@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/edit_doctor/edit_doctor.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 
 class AdminDoctorsScreen extends StatelessWidget {
   const AdminDoctorsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final clinicId = context.read<ClinicProvider>().clinicId;
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
-
+      backgroundColor: Color(0xFFF5F7FB),
       appBar: AppBar(
-        title: const Text(
-          "Manage Doctors",
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text("Manage Doctors", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
-
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('Doctors').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('clinics')
+            .doc(clinicId)
+            .collection('doctors')
+            .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           final docs = snapshot.data!.docs;
@@ -33,7 +35,7 @@ class AdminDoctorsScreen extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.medical_services_outlined,
                     size: 60,
@@ -50,9 +52,8 @@ class AdminDoctorsScreen extends StatelessWidget {
           }
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             children: [
-              // 🔥 HERO CARD
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -64,14 +65,14 @@ class AdminDoctorsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Doctor Management",
                       style: TextStyle(color: Colors.white70),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Text(
                       "${docs.length} Doctors Available",
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -98,7 +99,6 @@ class AdminDoctorsScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   child: Column(
                     children: [
                       Row(
@@ -168,7 +168,7 @@ class AdminDoctorsScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () async {
-                                final confirm = await showDialog(
+                                final confirm = await showDialog<bool>(
                                   context: context,
                                   builder: (_) => AlertDialog(
                                     title: Text("Delete Doctor"),
@@ -179,7 +179,7 @@ class AdminDoctorsScreen extends StatelessWidget {
                                       TextButton(
                                         onPressed: () =>
                                             Navigator.pop(context, false),
-                                        child: const Text("Cancel"),
+                                        child: Text("Cancel"),
                                       ),
                                       TextButton(
                                         onPressed: () =>
@@ -191,14 +191,17 @@ class AdminDoctorsScreen extends StatelessWidget {
                                 );
 
                                 if (confirm == true) {
+                                  //  delete from correct path
                                   await FirebaseFirestore.instance
-                                      .collection('Doctors')
+                                      .collection('clinics')
+                                      .doc(clinicId)
+                                      .collection('doctors')
                                       .doc(doc.id)
                                       .delete();
                                 }
                               },
-                              icon: Icon(Icons.delete, size: 18),
-                              label: Text("Delete"),
+                              icon: const Icon(Icons.delete, size: 18),
+                              label: const Text("Delete"),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red.shade400,
                                 padding: const EdgeInsets.symmetric(

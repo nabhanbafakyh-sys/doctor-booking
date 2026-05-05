@@ -7,4 +7,9 @@ class UserBottomBarvm extends ChangeNotifier {
     selectedpage = index;
     notifyListeners();
   }
+
+  void reset() {
+    selectedpage = 0;
+    notifyListeners();
+  }
 }

@@ -21,54 +21,70 @@ class AdminInfo extends StatelessWidget {
       body: Consumer<AdminProfileVm>(
         builder: (context, vm, _) {
           if (vm.isloading) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           return Padding(
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
+                  _card(
+                    title: "Personal Info",
+                    children: [
+                      const CircleAvatar(
+                        radius: 35,
+                        backgroundImage: NetworkImage(
+                          "https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg",
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const CircleAvatar(
-                          radius: 35,
-                          backgroundImage: NetworkImage(
-                            "https://cdn.vectorstock.com/i/1000v/51/87/student-avatar-user-profile-icon-vector-47025187.jpg",
-                          ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        vm.name.isNotEmpty ? vm.name : "Guest",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: 12),
-
-                        Text(
-                          vm.name.isNotEmpty ? vm.name : "Guest",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        SizedBox(height: 20),
-                        Divider(),
-
-                        infoTile(Icons.person, "Name", vm.name),
-                        infoTile(Icons.phone, "Phone", vm.phone),
-                        infoTile(Icons.email, "Email", vm.email),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      infoTile(Icons.person, "Name", vm.name),
+                      infoTile(Icons.phone, "Phone", vm.phone),
+                      infoTile(Icons.email, "Email", vm.email),
+                    ],
                   ),
-                  SizedBox(height: 30),
+
+                  const SizedBox(height: 20),
+
+                  _card(
+                    title: "Clinic Info",
+                    children: [
+                      CircleAvatar(
+                        radius: 35,
+                        backgroundColor: Color(0xFFE8F0FE),
+                        child: Icon(
+                          Icons.local_hospital,
+                          color: Color(0xFF1E2A78),
+                          size: 35,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        vm.clinicName.isNotEmpty ? vm.clinicName : "No Clinic",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Divider(),
+                      infoTile(Icons.business, "Clinic Name", vm.clinicName),
+                      infoTile(Icons.location_on, "Address", vm.clinicAddress),
+                      infoTile(Icons.phone, "Clinic Phone", vm.clinicPhone),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
                   SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -79,8 +95,8 @@ class AdminInfo extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      icon: Icon(Icons.edit, color: Colors.white),
-                      label: Text(
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      label: const Text(
                         "Edit Profile",
                         style: TextStyle(color: Colors.white),
                       ),
@@ -103,7 +119,26 @@ class AdminInfo extends StatelessWidget {
     );
   }
 
-  Widget infoTile(IconData icon, String title, String value) {
+  Widget _card({required String title, required List<Widget> children}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  static Widget infoTile(IconData icon, String title, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(

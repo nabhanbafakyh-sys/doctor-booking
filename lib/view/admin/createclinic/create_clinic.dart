@@ -16,6 +16,8 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
   final nameCtrl = TextEditingController();
   final addressCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
+  final adminNameCtrl = TextEditingController();
+  final adminPhoneCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +71,19 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
                     child: Column(
                       children: [
                         field(
+                          adminNameCtrl,
+                          "Your Name",
+                          Icons.person_outlined,
+                        ),
+                        SizedBox(height: 15),
+                        field(
+                          adminPhoneCtrl,
+                          "Your Phone",
+                          Icons.phone_outlined,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        SizedBox(height: 15),
+                        field(
                           nameCtrl,
                           "Clinic Name",
                           Icons.local_hospital_outlined,
@@ -102,6 +117,8 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
                                 : () async {
                                     if (nameCtrl.text.isEmpty ||
                                         addressCtrl.text.isEmpty ||
+                                        phoneCtrl.text.isEmpty ||
+                                        addressCtrl.text.isEmpty ||
                                         phoneCtrl.text.isEmpty) {
                                       showMsg("Fill all fields");
                                       return;
@@ -113,6 +130,9 @@ class _CreateClinicScreenState extends State<CreateClinicScreen> {
                                           name: nameCtrl.text.trim(),
                                           address: addressCtrl.text.trim(),
                                           phone: phoneCtrl.text.trim(),
+                                          adminName: adminNameCtrl.text.trim(),
+                                          adminPhone: adminPhoneCtrl.text
+                                              .trim(),
                                         );
 
                                     if (id == null) {

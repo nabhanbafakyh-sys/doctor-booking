@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/admin/createclinic/create_clinic.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 import 'package:room_rental/view_model/role/role.dart';
 
 class SigninPage extends StatefulWidget {
@@ -28,7 +29,9 @@ class _SigninPageState extends State<SigninPage> {
   @override
   void initState() {
     super.initState();
-    loadClinics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadClinics();
+    });
   }
 
   Future<void> loadClinics() async {
@@ -151,8 +154,6 @@ class _SigninPageState extends State<SigninPage> {
                           ),
 
                         const SizedBox(height: 25),
-
-                        /// 🔥 BUTTON
                         SizedBox(
                           width: double.infinity,
                           height: 50,

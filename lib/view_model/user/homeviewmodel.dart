@@ -15,6 +15,7 @@ class UserHomeViewModel extends ChangeNotifier {
   List<DoctorModel> filteredDoctors = [];
   String userName = "";
   bool isLoading = true;
+  bool initialized = false;
 
   StreamSubscription? _doctorsSubscription;
 
@@ -23,25 +24,27 @@ class UserHomeViewModel extends ChangeNotifier {
     fetchUser();
   }
 
-  void init() {
+  Future<void> init() async {
     debugPrint("init() called — clinicId: ${clinicProvider.clinicId}");
+    if (initialized) return;
+    initialized = true;
     if (clinicProvider.clinicId != null) {
       _loadAll();
     } else {
       debugPrint("clinicId is null, adding listener...");
-      clinicProvider.addListener(_onClinicReady);
+      clinicProvider.addListener(onClinicReady);
     }
   }
 
-  void _onClinicReady() {
+  Future<void> onClinicReady() async {
     debugPrint("_onClinicReady fired — clinicId: ${clinicProvider.clinicId}");
     if (clinicProvider.clinicId != null) {
-      clinicProvider.removeListener(_onClinicReady);
+      clinicProvider.removeListener(onClinicReady);
       _loadAll();
     }
   }
 
-  void fetchDoctors() {
+  Future<void> fetchDoctors() async {
     final cid = clinicProvider.clinicId!;
     debugPrint("fetchDoctors() — fetching from clinics/$cid/doctors");
 
@@ -115,10 +118,24 @@ class UserHomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reset() {
+    initialized = false;
+    _doctorsSubscription?.cancel();
+    clinicProvider.removeListener(onClinicReady);
+    doctors = [];
+    filteredDoctors = [];
+    userName = "";
+    isLoading = true;
+
+    notifyListeners();
+
+    init(); // re-run with the new user's clinicId
+  }
+
   @override
   void dispose() {
     _doctorsSubscription?.cancel();
-    clinicProvider.removeListener(_onClinicReady);
+    clinicProvider.removeListener(onClinicReady);
     super.dispose();
   }
 }

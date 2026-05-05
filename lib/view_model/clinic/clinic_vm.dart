@@ -17,7 +17,7 @@ class ClinicProvider extends ChangeNotifier {
       return;
     }
 
-    /// 🔥 STEP 1: check if ADMIN
+    // STEP 1: check if ADMIN
     final adminSnap = await _db
         .collection('clinics')
         .where('adminId', isEqualTo: user.uid)
@@ -26,7 +26,7 @@ class ClinicProvider extends ChangeNotifier {
     if (adminSnap.docs.isNotEmpty) {
       clinicId = adminSnap.docs.first.id;
     } else {
-      /// 🔥 STEP 2: check inside users (for patient)
+      // STEP 2: check inside users (for patient)
       final clinicsSnap = await _db.collection('clinics').get();
 
       for (var clinic in clinicsSnap.docs) {
@@ -52,6 +52,12 @@ class ClinicProvider extends ChangeNotifier {
 
   void setClinic(String id) {
     clinicId = id;
+    notifyListeners();
+  }
+
+  void reset() {
+    if (clinicId == null) return;
+    clinicId = null;
     notifyListeners();
   }
 }

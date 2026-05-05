@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:room_rental/view/admin/bottom/bottom_bar.dart';
 import 'package:room_rental/view/sign_in/signin_page.dart';
 import 'package:room_rental/view/user/bottom/bottom_navigation.dart';
+import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 import 'package:room_rental/widgets/textform_feild.dart';
 
 class Loginscren extends StatelessWidget {
@@ -134,22 +136,20 @@ class Loginscren extends StatelessWidget {
                           final role = data['role'];
                           final clinicId = data['clinicId'];
 
-                          debugPrint("✅ Role: $role");
-                          debugPrint("✅ ClinicId: $clinicId");
+                          debugPrint("Role: $role");
+                          debugPrint("ClinicId: $clinicId");
 
-                          /// 🚨 STEP 4: VALIDATION
                           if (clinicId == null) {
                             throw Exception("No clinic assigned");
                           }
 
                           if (!context.mounted) return;
-
-                          /// 🚀 STEP 5: NAVIGATION
+                          context.read<ClinicProvider>().setClinic(clinicId);
                           if (role == "admin") {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const AdminBottomBar(),
+                                builder: (_) => AdminBottomBar(),
                               ),
                             );
                           } else {

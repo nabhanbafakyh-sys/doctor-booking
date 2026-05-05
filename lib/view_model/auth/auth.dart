@@ -3,7 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:room_rental/view/role/role.dart';
+import 'package:room_rental/view_model/admin/admin_bottom_bar.dart';
+import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
+import 'package:room_rental/view_model/admin/admin_profile.dart';
 import 'package:room_rental/view_model/clinic/clinic_vm.dart';
+import 'package:room_rental/view_model/user/homeviewmodel.dart';
+import 'package:room_rental/view_model/user/user_bottom_bar.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -57,6 +62,8 @@ class AuthViewModel extends ChangeNotifier {
     required String name,
     required String address,
     required String phone,
+    required String adminName,
+    required String adminPhone,
   }) async {
     try {
       isLoading = true;
@@ -72,12 +79,30 @@ class AuthViewModel extends ChangeNotifier {
         'adminId': user.uid,
         'createdAt': Timestamp.now(),
       });
+
+      // ✅ global users doc with real admin name
       await _db.collection('users').doc(user.uid).set({
         'email': user.email,
-        'name': user.email,
+        'name': adminName,
+        'phone': adminPhone,
         'role': 'admin',
         'clinicId': ref.id,
       }, SetOptions(merge: true));
+
+      // ✅ clinic subcollection with complete data
+      await _db
+          .collection('clinics')
+          .doc(ref.id)
+          .collection('users')
+          .doc(user.uid)
+          .set({
+            'name': adminName,
+            'email': user.email,
+            'phone': adminPhone,
+            'role': 'admin',
+            'clinicId': ref.id,
+            'createdAt': Timestamp.now(),
+          });
 
       return ref.id;
     } catch (e) {
@@ -112,8 +137,6 @@ class AuthViewModel extends ChangeNotifier {
         'createdAt': Timestamp.now(),
       });
     }
-
-    /// 🔥 GLOBAL USER UPDATE (THIS FIXES YOUR ERROR)
     await _db.collection('users').doc(user.uid).update({'clinicId': clinicId});
   }
 
@@ -151,7 +174,12 @@ class AuthViewModel extends ChangeNotifier {
     await FirebaseAuth.instance.signOut();
 
     if (!context.mounted) return;
-
+    context.read<UserBottomBarvm>().reset();
+    context.read<AdminBottomBarvm>().reset();
+    context.read<UserHomeViewModel>().reset();
+    context.read<AdminHomeViewModel>().reset();
+    context.read<AdminProfileVm>().reset();
+    context.read<ClinicProvider>().reset();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
@@ -162,18 +190,13 @@ class AuthViewModel extends ChangeNotifier {
   Future<String?> handleUser(BuildContext context) async {
     final user = _auth.currentUser;
     if (user == null) return null;
-
-    /// 🔥 STEP 1: Get global user
     final globalDoc = await _db.collection('users').doc(user.uid).get();
-
     if (!globalDoc.exists) {
       throw Exception("User data not found");
     }
-
     final data = globalDoc.data()!;
     final clinicId = data['clinicId'];
     final role = data['role'];
-
     debugPrint("✅ Role: $role");
     debugPrint("✅ ClinicId: $clinicId");
 

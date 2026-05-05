@@ -6,6 +6,7 @@ import 'package:room_rental/view_model/clinic/clinic_vm.dart';
 class AdminHomeViewModel extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final ClinicProvider clinicProvider;
+  bool initialized = false;
 
   AdminHomeViewModel(this.clinicProvider) {
     _init();
@@ -17,10 +18,16 @@ class AdminHomeViewModel extends ChangeNotifier {
   StreamSubscription? _sub;
 
   void _init() {
+    if (initialized) return; // ✅ stop double init
+    initialized = true;
     if (clinicProvider.clinicId != null) {
       _listen();
     } else {
       clinicProvider.addListener(_waitForClinic);
+      if (clinicProvider.clinicId != null) {
+        clinicProvider.removeListener(_waitForClinic);
+        _listen();
+      }
     }
   }
 
@@ -33,6 +40,7 @@ class AdminHomeViewModel extends ChangeNotifier {
 
   void _listen() {
     final id = clinicProvider.clinicId!;
+    _sub?.cancel();
     _sub = _db
         .collection('clinics')
         .doc(id)
@@ -43,6 +51,16 @@ class AdminHomeViewModel extends ChangeNotifier {
           isLoading = false;
           notifyListeners();
         });
+  }
+
+  void reset() {
+    initialized = false;
+    _sub?.cancel();
+    clinicProvider.removeListener(_waitForClinic);
+    doctors = [];
+    isLoading = true;
+    notifyListeners();
+    _init();
   }
 
   Future<void> deleteDoctor(String id) async {
@@ -60,6 +78,7 @@ class AdminHomeViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _sub?.cancel();
+    clinicProvider.removeListener(_waitForClinic);
     super.dispose();
   }
 }

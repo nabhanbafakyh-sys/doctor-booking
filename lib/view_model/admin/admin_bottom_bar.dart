@@ -7,4 +7,9 @@ class AdminBottomBarvm extends ChangeNotifier {
     selectedIndex = index;
     notifyListeners();
   }
+
+  void reset() {
+    selectedIndex = 0;
+    notifyListeners();
+  }
 }
