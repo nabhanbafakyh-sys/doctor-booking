@@ -17,19 +17,15 @@ class DoctorDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: Color(0xFFF5F7FB),
 
       appBar: AppBar(
-        title: const Text(
-          'Doctor Details',
-          style: TextStyle(color: Colors.black),
-        ),
+        title: Text('Doctor details', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black),
       ),
 
-      // 🔥 LIVE DATA FROM FIRESTORE
       body: StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('Doctors')
@@ -37,22 +33,18 @@ class DoctorDetailsPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.data!.exists) {
-            return const Center(child: Text("Doctor not found"));
+            return Center(child: Text("Doctor not found"));
           }
 
           final doctor = snapshot.data!.data() as Map<String, dynamic>;
-
-          // ✅ SAFE DATA
           final name = doctor['name']?.toString() ?? 'No Name';
           final specialization =
               doctor['specialization']?.toString() ?? 'No Specialization';
           final bio = doctor['bio']?.toString() ?? 'No bio available';
-
-          // ✅ SAFE RATING
           double rating = doctor['rating'] is double
               ? doctor['rating']
               : double.tryParse(doctor['rating']?.toString() ?? '0') ?? 0.0;
@@ -61,9 +53,7 @@ class DoctorDetailsPage extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
               children: [
-                const SizedBox(height: 16),
-
-                // 👨‍⚕️ HEADER CARD
+                SizedBox(height: 16),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(18),
@@ -78,9 +68,9 @@ class DoctorDetailsPage extends StatelessWidget {
                       CircleAvatar(
                         radius: 28,
                         backgroundColor: Colors.white,
-                        child: const Icon(Icons.person, color: Colors.teal),
+                        child: Icon(Icons.person, color: Colors.teal),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
 
                       Expanded(
                         child: Column(
@@ -88,16 +78,16 @@ class DoctorDetailsPage extends StatelessWidget {
                           children: [
                             Text(
                               name,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white, // ✅ visible
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               specialization,
-                              style: const TextStyle(color: Colors.white70),
+                              style: TextStyle(color: Colors.white70),
                             ),
                           ],
                         ),
@@ -106,9 +96,8 @@ class DoctorDetailsPage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
-                // 📊 INFO CARDS
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -118,9 +107,7 @@ class DoctorDetailsPage extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 20),
-
-                // ⭐ RATING BAR
+                SizedBox(height: 20),
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(14),
@@ -136,17 +123,17 @@ class DoctorDetailsPage extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.star, color: Colors.orange),
-                      const SizedBox(width: 8),
+                      Icon(Icons.star, color: Colors.orange),
+                      SizedBox(width: 8),
                       Text(
                         "${rating.toStringAsFixed(1)}/5.0",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      const Spacer(),
-                      const Text(
+                      Spacer(),
+                      Text(
                         "Patient Reviews",
                         style: TextStyle(color: Colors.grey),
                       ),
@@ -154,7 +141,7 @@ class DoctorDetailsPage extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
 
                 // 📄 ABOUT
                 sectionTitle("About Specialist"),
@@ -172,10 +159,7 @@ class DoctorDetailsPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: Text(
-                      bio,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
+                    child: Text(bio, style: TextStyle(color: Colors.grey)),
                   ),
                 ),
               ],

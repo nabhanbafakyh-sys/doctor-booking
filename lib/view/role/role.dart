@@ -60,12 +60,15 @@ class RoleSelectionScreen extends StatelessWidget {
                           );
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF6A8DFF),
+                    backgroundColor: Colors.teal.shade300,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  child: Text("Continue →", style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    "Continue →",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
               ),
 
