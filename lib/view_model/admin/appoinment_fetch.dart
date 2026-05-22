@@ -62,7 +62,6 @@ class AdminDashboardViewModel extends ChangeNotifier {
     cancelled = 0;
 
     for (final a in appointments) {
-      // 🔒 Safe date handling (supports string or Timestamp)
       DateTime? date;
       if (a['date'] is String) {
         date = DateTime.tryParse(a['date']);

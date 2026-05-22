@@ -18,7 +18,7 @@ class AdminHomeViewModel extends ChangeNotifier {
   StreamSubscription? _sub;
 
   void _init() {
-    if (initialized) return; // ✅ stop double init
+    if (initialized) return;
     initialized = true;
     if (clinicProvider.clinicId != null) {
       _listen();

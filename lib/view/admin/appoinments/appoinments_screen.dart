@@ -12,7 +12,7 @@ class AdminDashboard extends StatelessWidget {
     final vm = context.watch<AdminDashboardViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,

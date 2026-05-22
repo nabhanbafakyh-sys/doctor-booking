@@ -25,16 +25,16 @@ class CustomtextfieldState extends State<Customtextfield> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         TextFormField(
           controller: widget.controller,
           decoration: InputDecoration(
             prefixIcon: Icon(widget.prefixicon),
             hintText: widget.hintText,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.black),
             ),
           ),

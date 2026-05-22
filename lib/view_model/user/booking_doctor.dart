@@ -51,7 +51,6 @@ class BookingVM extends ChangeNotifier {
 
     final dateStr = selectedDate!.toIso8601String();
 
-    // 🔥 Prevent double booking
     final existing = await _db
         .collection('clinics')
         .doc(cid)

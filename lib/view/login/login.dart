@@ -99,7 +99,7 @@ class Loginscren extends StatelessWidget {
                             debugPrint(" User doc missing → creating...");
                             await userRef.set({
                               'email': user.email,
-                              'role': 'patient', // default role
+                              'role': 'patient',
                               'clinicId': null,
                               'createdAt': Timestamp.now(),
                             });

@@ -89,7 +89,7 @@ class AuthViewModel extends ChangeNotifier {
         'clinicId': ref.id,
       }, SetOptions(merge: true));
 
-      // ✅ clinic subcollection with complete data
+      //clinic subcollection with complete data
       await _db
           .collection('clinics')
           .doc(ref.id)
@@ -118,7 +118,7 @@ class AuthViewModel extends ChangeNotifier {
     final user = _auth.currentUser;
     if (user == null) return;
 
-    /// 🔹 clinic subcollection
+    // clinic subcollection
     final clinicRef = _db
         .collection('clinics')
         .doc(clinicId)
@@ -182,7 +182,7 @@ class AuthViewModel extends ChangeNotifier {
     context.read<ClinicProvider>().reset();
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (_) => const RoleSelectionScreen()),
+      MaterialPageRoute(builder: (_) => RoleSelectionScreen()),
       (route) => false,
     );
   }
@@ -197,8 +197,8 @@ class AuthViewModel extends ChangeNotifier {
     final data = globalDoc.data()!;
     final clinicId = data['clinicId'];
     final role = data['role'];
-    debugPrint("✅ Role: $role");
-    debugPrint("✅ ClinicId: $clinicId");
+    debugPrint(" Role: $role");
+    debugPrint(" ClinicId: $clinicId");
 
     if (clinicId == null) {
       throw Exception("No clinic assigned");

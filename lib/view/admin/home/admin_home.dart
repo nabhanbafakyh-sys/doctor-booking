@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:room_rental/view/admin/add-screen/add_doctor.dart';
 import 'package:room_rental/view/admin/home/widget/admin_doctorcard.dart';
 import 'package:room_rental/view_model/admin/admin_home_viewmodel.dart';
 
@@ -11,7 +12,7 @@ class AdminHome extends StatelessWidget {
     final vm = context.watch<AdminHomeViewModel>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FB),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -19,7 +20,7 @@ class AdminHome extends StatelessWidget {
           padding: const EdgeInsets.all(6.0),
           child: Image.asset('assets/role.png'),
         ),
-        title: const Text(
+        title: Text(
           "Vitality",
           style: TextStyle(
             fontWeight: FontWeight.w700,
@@ -28,7 +29,7 @@ class AdminHome extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        actions: const [
+        actions: [
           Padding(
             padding: EdgeInsets.all(10),
             child: Icon(Icons.notifications_none, color: Colors.black),
@@ -85,6 +86,29 @@ class AdminHome extends StatelessWidget {
                       "Manage doctors and medical staff easily",
                       style: TextStyle(color: Colors.grey),
                     ),
+                    SizedBox(height: 10),
+
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => AddDoctorPage()),
+                        );
+                      },
+                      icon: Icon(Icons.add, color: Colors.white),
+                      label: Text(
+                        "Add Doctor    ",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal.shade300,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+
                     SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(16),

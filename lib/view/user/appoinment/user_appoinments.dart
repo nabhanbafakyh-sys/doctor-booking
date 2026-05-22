@@ -53,8 +53,6 @@ class UserAppointments extends StatelessWidget {
                 ),
                 Expanded(
                   child: vm.isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : vm.filteredAppointments.isEmpty
                       ? Center(child: Text("No appointments"))
                       : ListView.builder(
                           itemCount: vm.filteredAppointments.length,
